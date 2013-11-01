@@ -102,7 +102,21 @@ public class ApiCheckTest extends TestCase {
     assertEquals(1, report.errors().size());
     assertEquals(Errors.CHANGED_SUPERCLASS, report.errors().iterator().next().error());
   }
+
+  public void testChangedAssignableReturn() {
+    String[] args = { "test/api/changed-assignable-return-1.xml", "test/api/changed-assignable-return-2.xml" };
+    ApiCheck apiCheck = new ApiCheck();
+    Report report = apiCheck.checkApi(args);
+    assertEquals(0, report.errors().size());
+  }
   
+  public void testInsertedSuper() {
+    String[] args = { "test/api/inserted-super-1.xml", "test/api/inserted-super-2.xml" };
+    ApiCheck apiCheck = new ApiCheck();
+    Report report = apiCheck.checkApi(args);
+    assertEquals(0, report.errors().size());
+  }
+
   public void testAddedInterface() {
     String[] args = { "test/api/removed-interface.xml", "test/api/medium.xml" };
     ApiCheck apiCheck = new ApiCheck();
@@ -275,8 +289,7 @@ public class ApiCheckTest extends TestCase {
     String[] args = { "test/api/constants.xml", "test/api/changed-synchronized.xml" };
     ApiCheck apiCheck = new ApiCheck();
     Report report = apiCheck.checkApi(args);
-    assertEquals(1, report.errors().size());
-    assertEquals(Errors.CHANGED_SYNCHRONIZED, report.errors().iterator().next().error());
+    assertEquals(0, report.errors().size());
   }
 
   public void testChangedVolatile() {
