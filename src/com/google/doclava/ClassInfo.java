@@ -1429,7 +1429,7 @@ public class ClassInfo extends DocInfo implements ContainerInfo, Comparable, Sco
   }
 
   public boolean hasShowAnnotation() {
-    return mShowAnnotations.size() > 0;
+    return mShowAnnotations != null && mShowAnnotations.size() > 0;
   }
 
   public ArrayList<AnnotationInstanceInfo> showAnnotations() {
