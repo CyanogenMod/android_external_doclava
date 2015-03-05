@@ -94,18 +94,35 @@ public class Stubs {
                 + m.name() + " is deprecated");
           }
 
-          ClassInfo returnClass = m.returnType().asClassInfo();
-          if (returnClass != null && returnClass.isHiddenOrRemoved()) {
-            Errors.error(Errors.UNAVAILABLE_SYMBOL, m.position(), "Method " + cl.qualifiedName()
-                + "." + m.name() + " returns unavailable type " + returnClass.name());
+          ClassInfo hiddenReturnClass = findHiddenClasses(m.returnType());
+          if (null != hiddenReturnClass) {
+            if (hiddenReturnClass.qualifiedName() == m.returnType().asClassInfo().qualifiedName()) {
+              // Return type is hidden
+              Errors.error(Errors.UNAVAILABLE_SYMBOL, m.position(), "Method " + cl.qualifiedName()
+                  + "." + m.name() + " returns unavailable type " + hiddenReturnClass.name());
+            } else {
+              // Return type contains a generic parameter
+              Errors.error(Errors.HIDDEN_TYPE_PARAMETER, m.position(), "Method " + cl.qualifiedName()
+                  + "." + m.name() + " returns unavailable type " + hiddenReturnClass.name()
+                  + " as a type parameter");
+            }
           }
 
           for (ParameterInfo p :  m.parameters()) {
             TypeInfo t = p.type();
             if (!t.isPrimitive()) {
-              if (t.asClassInfo().isHiddenOrRemoved()) {
-                Errors.error(Errors.UNAVAILABLE_SYMBOL, m.position(), "Parameter of unavailable type "
-                    + t.fullName() + " in " + cl.qualifiedName() + "." + m.name() + "()");
+              if (null != findHiddenClasses(t)) {
+                if (hiddenReturnClass.qualifiedName() == t.asClassInfo().qualifiedName()) {
+                  // Parameter type is hidden
+                  Errors.error(Errors.UNAVAILABLE_SYMBOL, m.position(),
+                      "Parameter of unavailable type " + t.fullName() + " in " + cl.qualifiedName()
+                      + "." + m.name() + "()");
+                } else {
+                  // Parameter type contains a generic parameter
+                  Errors.error(Errors.HIDDEN_TYPE_PARAMETER, m.position(),
+                      "Parameter uses type parameter of unavailable type " + t.fullName() + " in "
+                      + cl.qualifiedName() + "." + m.name() + "()");
+                }
               }
             }
           }
@@ -191,6 +208,22 @@ public class Stubs {
       writeRemovedApi(removedApiWriter, allPackageClassMap, notStrippable);
       removedApiWriter.close();
     }
+  }
+
+  private static ClassInfo findHiddenClasses(TypeInfo ti) {
+    ClassInfo ci = ti.asClassInfo();
+    if (ci == null) return null;
+    if (ci.isHiddenOrRemoved()) return ci;
+    if (ti.typeArguments() != null) {
+      for (TypeInfo tii : ti.typeArguments()) {
+        // Avoid infinite recursion in the case of Foo<T extends Foo>
+        if (tii.qualifiedTypeName() != ti.qualifiedTypeName()) {
+          ClassInfo hiddenClass = findHiddenClasses(tii);
+          if (hiddenClass != null) return hiddenClass;
+        }
+      }
+    }
+    return null;
   }
 
   public static void cantStripThis(ClassInfo cl, HashSet<ClassInfo> notStrippable, String why) {
