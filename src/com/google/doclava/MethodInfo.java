@@ -592,6 +592,18 @@ public class MethodInfo extends MemberInfo implements AbstractMethodInfo, Resolv
       TypeInfo.makeHDF(data, base + ".generic.typeArguments", mTypeParameters, false);
     }
 
+    int numAnnotationDocumentation = 0;
+    for (AnnotationInstanceInfo aii : annotations()) {
+      String annotationDocumentation = Doclava.getDocumentationStringForAnnotation(
+          aii.type().qualifiedName());
+      if (annotationDocumentation != null) {
+        data.setValue(base + ".annotationdocumentation." + numAnnotationDocumentation + ".text",
+            annotationDocumentation);
+        numAnnotationDocumentation++;
+      }
+    }
+
+
     AnnotationInstanceInfo.makeLinkListHDF(
       data,
       base + ".showAnnotations",

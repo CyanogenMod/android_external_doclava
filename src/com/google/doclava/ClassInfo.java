@@ -1234,6 +1234,17 @@ public class ClassInfo extends DocInfo implements ContainerInfo, Comparable, Sco
       data.setValue("class.abstract", "abstract");
     }
 
+    int numAnnotationDocumentation = 0;
+    for (AnnotationInstanceInfo aii : annotations()) {
+      String annotationDocumentation = Doclava.getDocumentationStringForAnnotation(
+          aii.type().qualifiedName());
+      if (annotationDocumentation != null) {
+        data.setValue("class.annotationdocumentation." + numAnnotationDocumentation + ".text",
+            annotationDocumentation);
+        numAnnotationDocumentation++;
+      }
+    }
+
     ArrayList<AnnotationInstanceInfo> showAnnos = getShowAnnotationsIncludeOuters();
     AnnotationInstanceInfo.makeLinkListHDF(
       data,
