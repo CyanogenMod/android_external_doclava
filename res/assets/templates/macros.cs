@@ -137,6 +137,10 @@ def:short_descr(obj) ?><?cs
     /if ?>
     <?cs call:tag_list(obj.deprecated) ?></em><?cs
   else ?><?cs call:tag_list(obj.shortDescr) ?><?cs
+  if:subcount(obj.annotationdocumentation)?><?cs
+    each:annodoc=obj.annotationdocumentation ?>
+    <div><?cs var:annodoc.text?></div><?cs
+    /each?><?cs /if?><?cs
   /if ?><?cs
 /def ?>
 
@@ -196,6 +200,10 @@ if:reference.apilevels && obj.since ?>
 def:description(obj) ?><?cs 
   call:deprecated_warning(obj) ?>
   <div class="jd-tagdata jd-tagdescr"><p><?cs call:tag_list(obj.descr) ?></p></div><?cs 
+  if:subcount(obj.annotationdocumentation)?><?cs
+    each:annodoc=obj.annotationdocumentation ?>
+    <div class="jd-tagdata" style="display:block"><?cs var:annodoc.text?></div><?cs
+    /each?><?cs /if?><?cs
   if:subcount(obj.attrRefs) ?>
   <div class="jd-tagdata">
       <h5 class="jd-tagtitle">Related XML Attributes</h5>
