@@ -159,7 +159,7 @@ Summary:
 <h2>Class Overview</h2>
 <?cs if:subcount(class.descr) ?><p itemprop="articleBody"><?cs call:tag_list(class.descr) ?></p><?cs /if ?>
 <?cs if:subcount(class.annotationdocumentation) ?><?cs each:annodoc = class.annotationdocumentation ?>
-<p></?cs var:annodoc.text ?></p>
+<p><?cs var:annodoc.text ?></p>
 <?cs /each ?><? /if ?>
 <?cs /if ?>
 
