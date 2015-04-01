@@ -294,6 +294,10 @@ public class Stubs {
             + " stripped of unavailable superclass " + supr.qualifiedName());
       } else {
         cantStripThis(supr, notStrippable, "6:" + cl.realSuperclass().name() + cl.qualifiedName());
+        if (supr.isPrivate()) {
+          Errors.error(Errors.PRIVATE_SUPERCLASS, cl.position(), "Public class "
+              + cl.qualifiedName() + " extends private class " + supr.qualifiedName());
+        }
       }
     }
   }
