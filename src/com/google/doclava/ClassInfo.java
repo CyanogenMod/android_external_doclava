@@ -2092,9 +2092,12 @@ public class ClassInfo extends DocInfo implements ContainerInfo, Comparable, Sco
         /*
          * Similarly to the above, do not fail if this "new" method is really an override of an
          * existing superclass method.
+         * But we should fail if this is overriding an abstract method, because method's
+         * abstractness affects how users use it. See also Stubs.methodIsOverride().
          */
         MethodInfo mi = ClassInfo.overriddenMethod(mInfo, this);
-        if (mi == null) {
+        if (mi == null ||
+            mi.isAbstract() != mInfo.isAbstract()) {
           Errors.error(Errors.ADDED_METHOD, mInfo.position(), "Added public method "
               + mInfo.qualifiedName());
           consistent = false;
