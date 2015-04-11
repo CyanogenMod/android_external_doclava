@@ -116,8 +116,8 @@ public class DocFile {
      * outfile + "'");
      */
     if (hdf == null) {
-      hdf = Doclava.makeHDF(); 
-    } 
+      hdf = Doclava.makeHDF();
+    }
     String filedata = readFile(docfile);
 
     // The document is properties up until the line "@jd:body".
@@ -180,8 +180,8 @@ public class DocFile {
       ClearPage.write(hdf, "docpage.cs", outfile);
     } else {
       String filename = outfile;
-      // Strip out the intl and lang id substr and get back just the 
-      // guide, design, distribute, etc. 
+      // Strip out the intl and lang id substr and get back just the
+      // guide, design, distribute, etc.
       filename = getPathRoot(filename);
       if (filename.indexOf("design") == 0) {
         hdf.setValue("design", "true");
@@ -250,6 +250,14 @@ public class DocFile {
         hdf.setValue("auto", "true");
       } else if (filename.indexOf("tv") == 0) {
         hdf.setValue("tv", "true");
+      } else if (filename.indexOf("ndk") == 0) {
+        hdf.setValue("ndk", "true");
+        hdf.setValue("page.type", "ndk");
+        if (filename.indexOf("ndk/guides") == 0) {
+          hdf.setValue("guides", "true");
+        } else if (filename.indexOf("ndk/reference") == 0) {
+          hdf.setValue("reference", "true");
+        }
       }
       //set metadata for this file in jd_lists_unified
       PageMetadata.setPageMetadata(docfile, relative, outfile, hdf, Doclava.sTaglist);
