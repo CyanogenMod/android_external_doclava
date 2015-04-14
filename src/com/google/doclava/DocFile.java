@@ -254,9 +254,13 @@ public class DocFile {
         hdf.setValue("ndk", "true");
         hdf.setValue("page.type", "ndk");
         if (filename.indexOf("ndk/guides") == 0) {
-          hdf.setValue("guides", "true");
+          hdf.setValue("guide", "true");
         } else if (filename.indexOf("ndk/reference") == 0) {
           hdf.setValue("reference", "true");
+        } else if (filename.indexOf("ndk/samples") == 0) {
+          hdf.setValue("samples", "true");
+        } else if (filename.indexOf("ndk/downloads") == 0) {
+          hdf.setValue("downloads", "true");
         }
       }
       //set metadata for this file in jd_lists_unified
