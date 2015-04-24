@@ -19,8 +19,11 @@ package com.google.doclava.apicheck;
 import com.google.doclava.ClassInfo;
 import com.google.doclava.Errors;
 import com.google.doclava.PackageInfo;
+
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class ApiInfo {
@@ -60,11 +63,27 @@ public class ApiInfo {
    * Checks to see if this api is consistent with a newer version.
    */
   public boolean isConsistent(ApiInfo otherApi) {
+    return isConsistent(otherApi, null);
+  }
+
+  public boolean isConsistent(ApiInfo otherApi, List<PackageInfo> pkgInfoDiff) {
     boolean consistent = true;
+    boolean diffMode = pkgInfoDiff != null;
     for (PackageInfo pInfo : mPackages.values()) {
+      List<ClassInfo> newClsApis = null;
       if (otherApi.getPackages().containsKey(pInfo.name())) {
-        if (!pInfo.isConsistent(otherApi.getPackages().get(pInfo.name()))) {
+        if (diffMode) {
+          newClsApis = new ArrayList<>();
+        }
+        if (!pInfo.isConsistent(otherApi.getPackages().get(pInfo.name()), newClsApis)) {
           consistent = false;
+        }
+        if (diffMode && !newClsApis.isEmpty()) {
+          PackageInfo info = new PackageInfo(pInfo.name(), pInfo.position());
+          for (ClassInfo cInfo : newClsApis) {
+            info.addClass(cInfo);
+          }
+          pkgInfoDiff.add(info);
         }
       } else {
         Errors.error(Errors.REMOVED_PACKAGE, pInfo.position(), "Removed package " + pInfo.name());
@@ -75,7 +94,13 @@ public class ApiInfo {
       if (!mPackages.containsKey(pInfo.name())) {
         Errors.error(Errors.ADDED_PACKAGE, pInfo.position(), "Added package " + pInfo.name());
         consistent = false;
+        if (diffMode) {
+          pkgInfoDiff.add(pInfo);
+        }
       }
+    }
+    if (diffMode) {
+      Collections.sort(pkgInfoDiff, PackageInfo.comparator);
     }
     return consistent;
   }
