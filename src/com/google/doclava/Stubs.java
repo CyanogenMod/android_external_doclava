@@ -27,8 +27,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 public class Stubs {
   public static void writeStubsAndApi(String stubsDir, String apiFile, String keepListFile,
@@ -161,9 +163,10 @@ public class Stubs {
 
     // packages contains all the notStrippable classes mapped by their containing packages
     HashMap<PackageInfo, List<ClassInfo>> packages = new HashMap<PackageInfo, List<ClassInfo>>();
+    final HashSet<Pattern> stubPackageWildcards = extractWildcards(stubPackages);
     for (ClassInfo cl : notStrippable) {
       if (!cl.isDocOnly()) {
-        if (stubPackages == null || stubPackages.contains(cl.containingPackage().name())) {
+        if (shouldWriteStub(cl.containingPackage().name(), stubPackages, stubPackageWildcards)) {
           // write out the stubs
           if (stubsDir != null) {
             writeClassFile(stubsDir, notStrippable, cl);
@@ -209,6 +212,46 @@ public class Stubs {
       writeRemovedApi(removedApiWriter, allPackageClassMap, notStrippable);
       removedApiWriter.close();
     }
+  }
+
+  private static boolean shouldWriteStub(final String packageName,
+          final HashSet<String> stubPackages, final HashSet<Pattern> stubPackageWildcards) {
+    if (stubPackages == null) {
+      // There aren't any stub packages set, write all stubs
+      return true;
+    }
+    if (stubPackages.contains(packageName)) {
+      // Stub packages contains package, return true
+      return true;
+    }
+    if (stubPackageWildcards != null) {
+      // Else, we will iterate through the wildcards to see if there's a match
+      for (Pattern wildcard : stubPackageWildcards) {
+        if (wildcard.matcher(packageName).matches()) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  private static HashSet<Pattern> extractWildcards(HashSet<String> stubPackages) {
+    HashSet<Pattern> wildcards = null;
+    if (stubPackages != null) {
+      for (Iterator<String> i = stubPackages.iterator(); i.hasNext();) {
+        final String pkg = i.next();
+        if (pkg.indexOf('*') != -1) {
+          if (wildcards == null) {
+            wildcards = new HashSet<Pattern>();
+          }
+          // Add the compiled wildcard, replacing * with the regex equivalent
+          wildcards.add(Pattern.compile(pkg.replace("*", ".*?")));
+          // And remove the raw wildcard from the packages
+          i.remove();
+        }
+      }
+    }
+    return wildcards;
   }
 
   private static ClassInfo findHiddenClasses(TypeInfo ti) {
