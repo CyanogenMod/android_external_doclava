@@ -23,10 +23,12 @@ import java.io.InputStream;
 import java.io.PrintStream;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import java.util.Stack;
 
 import com.google.doclava.Errors;
+import com.google.doclava.PackageInfo;
 import com.google.doclava.Errors.ErrorMessage;
 import com.google.doclava.Stubs;
 
@@ -62,6 +64,9 @@ public class ApiCheck {
       System.exit(convertToApi(originalArgs[1], originalArgs[2]));
     } else if (originalArgs.length == 3 && "-convert2xml".equals(originalArgs[0])) {
       System.exit(convertToXml(originalArgs[1], originalArgs[2]));
+    } else if (originalArgs.length == 4 && "-new_api".equals(originalArgs[0])) {
+      // command syntax: -new_api oldapi.txt newapi.txt diff.xml
+      System.exit(newApi(originalArgs[1], originalArgs[2], originalArgs[3]));
     } else {
       ApiCheck acheck = new ApiCheck();
       Report report = acheck.checkApi(originalArgs);
@@ -270,4 +275,41 @@ public class ApiCheck {
     return 0;
   }
 
+  /**
+   * Generates a "diff": where new API is trimmed down by removing existing methods found in old API
+   * @param origApiPath path to old API text file
+   * @param newApiPath path to new API text file
+   * @param outputPath output XML path for the generated diff
+   * @return
+   */
+  static int newApi(String origApiPath, String newApiPath, String outputPath) {
+    ApiInfo origApi, newApi;
+    try {
+      origApi = parseApi(origApiPath);
+    } catch (ApiParseException e) {
+      e.printStackTrace();
+      System.err.println("Error parsing API: " + origApiPath);
+      return 1;
+    }
+    try {
+      newApi = parseApi(newApiPath);
+    } catch (ApiParseException e) {
+      e.printStackTrace();
+      System.err.println("Error parsing API: " + newApiPath);
+      return 1;
+    }
+    List<PackageInfo> pkgInfoDiff = new ArrayList<>();
+    if (!origApi.isConsistent(newApi, pkgInfoDiff)) {
+      PrintStream apiWriter = null;
+      try {
+        apiWriter = new PrintStream(outputPath);
+      } catch (FileNotFoundException ex) {
+        System.err.println("can't open file: " + outputPath);
+      }
+      Stubs.writeXml(apiWriter, pkgInfoDiff);
+    } else {
+      System.err.println("No API change detected, not generating diff.");
+    }
+    return 0;
+  }
 }
