@@ -2045,7 +2045,12 @@ public class ClassInfo extends DocInfo implements ContainerInfo, Comparable, Sco
   }
 
   public boolean isConsistent(ClassInfo cl) {
+    return isConsistent(cl, null, null);
+  }
+
+  public boolean isConsistent(ClassInfo cl, List<MethodInfo> newCtors, List<MethodInfo> newMethods) {
     boolean consistent = true;
+    boolean diffMode = (newCtors != null) && (newMethods != null);
 
     if (isInterface() != cl.isInterface()) {
       Errors.error(Errors.CHANGED_CLASS, cl.position(), "Class " + cl.qualifiedName()
@@ -2100,9 +2105,15 @@ public class ClassInfo extends DocInfo implements ContainerInfo, Comparable, Sco
             mi.isAbstract() != mInfo.isAbstract()) {
           Errors.error(Errors.ADDED_METHOD, mInfo.position(), "Added public method "
               + mInfo.qualifiedName());
+          if (diffMode) {
+            newMethods.add(mInfo);
+          }
           consistent = false;
         }
       }
+    }
+    if (diffMode) {
+      Collections.sort(newMethods, MethodInfo.comparator);
     }
 
     for (MethodInfo mInfo : mApiCheckConstructors.values()) {
@@ -2120,8 +2131,14 @@ public class ClassInfo extends DocInfo implements ContainerInfo, Comparable, Sco
       if (!mApiCheckConstructors.containsKey(mInfo.getHashableName())) {
         Errors.error(Errors.ADDED_METHOD, mInfo.position(), "Added public constructor "
             + mInfo.prettySignature());
+        if (diffMode) {
+          newCtors.add(mInfo);
+        }
         consistent = false;
       }
+    }
+    if (diffMode) {
+      Collections.sort(newCtors, MethodInfo.comparator);
     }
 
     for (FieldInfo mInfo : mApiCheckFields.values()) {
