@@ -20,6 +20,7 @@ import com.google.doclava.ClassInfo;
 import com.google.doclava.Errors;
 import com.google.doclava.PackageInfo;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -58,12 +59,25 @@ public class ApiInfo {
 
   /**
    * Checks to see if this api is consistent with a newer version.
+   *
+   * @param otherApi the other api to test consistency against
+   * @param ignoredPackages packages to skip consistency checks (will match by exact name)
+   * @param ignoredClasses classes to skip consistency checks (will match by exact fully qualified
+   * name)
    */
-  public boolean isConsistent(ApiInfo otherApi) {
+  public boolean isConsistent(ApiInfo otherApi,
+      Collection<String> ignoredPackages, Collection<String> ignoredClasses) {
     boolean consistent = true;
     for (PackageInfo pInfo : mPackages.values()) {
+      // TODO: Add support for matching subpackages (e.g, something like
+      // test.example.* should match test.example.subpackage, and
+      // test.example.** should match the above AND test.example.subpackage.more)
+      if (ignoredPackages != null && ignoredPackages.contains(pInfo.name())) {
+          // TODO: Log skipping this?
+          continue;
+      }
       if (otherApi.getPackages().containsKey(pInfo.name())) {
-        if (!pInfo.isConsistent(otherApi.getPackages().get(pInfo.name()))) {
+        if (!pInfo.isConsistent(otherApi.getPackages().get(pInfo.name()), ignoredClasses)) {
           consistent = false;
         }
       } else {
@@ -72,12 +86,23 @@ public class ApiInfo {
       }
     }
     for (PackageInfo pInfo : otherApi.mPackages.values()) {
+      if (ignoredPackages != null && ignoredPackages.contains(pInfo.name())) {
+          // TODO: Log skipping this?
+          continue;
+      }
       if (!mPackages.containsKey(pInfo.name())) {
         Errors.error(Errors.ADDED_PACKAGE, pInfo.position(), "Added package " + pInfo.name());
         consistent = false;
       }
     }
     return consistent;
+  }
+
+  /**
+   * Checks to see if this api is consistent with a newer version.
+   */
+  public boolean isConsistent(ApiInfo otherApi) {
+    return isConsistent(otherApi, null, null);
   }
 
   public HashMap<String, PackageInfo> getPackages() {

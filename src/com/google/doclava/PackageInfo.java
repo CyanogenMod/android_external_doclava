@@ -394,9 +394,15 @@ public class PackageInfo extends DocInfo implements ContainerInfo {
     return mClasses;
   }
 
-  public boolean isConsistent(PackageInfo pInfo) {
+  public boolean isConsistent(PackageInfo pInfo, Collection<String> ignoredClasses) {
     boolean consistent = true;
     for (ClassInfo cInfo : mClasses.values()) {
+      // TODO: Add support for matching inner classes (e.g, something like
+      //  example.Type.* should match example.Type.InnerType)
+      if (ignoredClasses != null && ignoredClasses.contains(cInfo.qualifiedName())) {
+          // TODO: Log skipping this?
+          continue;
+      }
       if (pInfo.mClasses.containsKey(cInfo.name())) {
         if (!cInfo.isConsistent(pInfo.mClasses.get(cInfo.name()))) {
           consistent = false;
@@ -408,6 +414,10 @@ public class PackageInfo extends DocInfo implements ContainerInfo {
       }
     }
     for (ClassInfo cInfo : pInfo.mClasses.values()) {
+      if (ignoredClasses != null && ignoredClasses.contains(cInfo.qualifiedName())) {
+          // TODO: Log skipping this?
+          continue;
+      }
       if (!mClasses.containsKey(cInfo.name())) {
         Errors.error(Errors.ADDED_CLASS, cInfo.position(), "Added class " + cInfo.name()
             + " to package " + pInfo.name());
@@ -415,5 +425,9 @@ public class PackageInfo extends DocInfo implements ContainerInfo {
       }
     }
     return consistent;
+  }
+
+  public boolean isConsistent(PackageInfo pInfo) {
+    return isConsistent(pInfo, null);
   }
 }
