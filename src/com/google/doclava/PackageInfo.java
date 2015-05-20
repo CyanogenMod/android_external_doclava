@@ -455,11 +455,34 @@ public class PackageInfo extends DocInfo implements ContainerInfo {
    * @return
    */
   public boolean isConsistent(PackageInfo pInfo, List<ClassInfo> clsInfoDiff) {
+      return isConsistent(pInfo, clsInfoDiff, null);
+  }
+
+  /**
+   * Check if packages are consistent, also record class deltas.
+   * <p>
+   * <ul>class deltas are:
+   * <li>brand new classes that are not present in current package
+   * <li>stripped existing classes stripped where only newly added methods are kept
+   * @param pInfo
+   * @param clsInfoDiff
+   * @param ignoredClasses
+   * @return
+   */
+  public boolean isConsistent(PackageInfo pInfo, List<ClassInfo> clsInfoDiff,
+      Collection<String> ignoredClasses) {
     boolean consistent = true;
     boolean diffMode = clsInfoDiff != null;
     for (ClassInfo cInfo : mClasses.values()) {
       ArrayList<MethodInfo> newClsApis = null;
       ArrayList<MethodInfo> newClsCtors = null;
+
+      // TODO: Add support for matching inner classes (e.g, something like
+      //  example.Type.* should match example.Type.InnerType)
+      if (ignoredClasses != null && ignoredClasses.contains(cInfo.qualifiedName())) {
+          // TODO: Log skipping this?
+          continue;
+      }
       if (pInfo.mClasses.containsKey(cInfo.name())) {
         if (diffMode) {
           newClsApis = new ArrayList<>();
@@ -481,6 +504,10 @@ public class PackageInfo extends DocInfo implements ContainerInfo {
       }
     }
     for (ClassInfo cInfo : pInfo.mClasses.values()) {
+      if (ignoredClasses != null && ignoredClasses.contains(cInfo.qualifiedName())) {
+          // TODO: Log skipping this?
+          continue;
+      }
       if (!mClasses.containsKey(cInfo.name())) {
         Errors.error(Errors.ADDED_CLASS, cInfo.position(), "Added class " + cInfo.name()
             + " to package " + pInfo.name());
