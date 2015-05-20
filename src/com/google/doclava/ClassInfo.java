@@ -2087,7 +2087,7 @@ public class ClassInfo extends DocInfo implements ContainerInfo, Comparable, Sco
         }
         if (mi == null) {
           Errors.error(Errors.REMOVED_METHOD, mInfo.position(), "Removed public method "
-              + mInfo.qualifiedName());
+              + mInfo.prettyQualifiedSignature());
           consistent = false;
         }
       }
@@ -2104,7 +2104,7 @@ public class ClassInfo extends DocInfo implements ContainerInfo, Comparable, Sco
         if (mi == null ||
             mi.isAbstract() != mInfo.isAbstract()) {
           Errors.error(Errors.ADDED_METHOD, mInfo.position(), "Added public method "
-              + mInfo.qualifiedName());
+              + mInfo.prettyQualifiedSignature());
           if (diffMode) {
             newMethods.add(mInfo);
           }
@@ -2123,14 +2123,14 @@ public class ClassInfo extends DocInfo implements ContainerInfo, Comparable, Sco
         }
       } else {
         Errors.error(Errors.REMOVED_METHOD, mInfo.position(), "Removed public constructor "
-            + mInfo.prettySignature());
+            + mInfo.prettyQualifiedSignature());
         consistent = false;
       }
     }
     for (MethodInfo mInfo : cl.mApiCheckConstructors.values()) {
       if (!mApiCheckConstructors.containsKey(mInfo.getHashableName())) {
         Errors.error(Errors.ADDED_METHOD, mInfo.position(), "Added public constructor "
-            + mInfo.prettySignature());
+            + mInfo.prettyQualifiedSignature());
         if (diffMode) {
           newCtors.add(mInfo);
         }
@@ -2221,7 +2221,7 @@ public class ClassInfo extends DocInfo implements ContainerInfo, Comparable, Sco
     if (!isDeprecated() == cl.isDeprecated()) {
       consistent = false;
       Errors.error(Errors.CHANGED_DEPRECATED, cl.position(), "Class " + cl.qualifiedName()
-          + " has changed deprecation state");
+          + " has changed deprecation state " + isDeprecated() + " --> " + cl.isDeprecated());
     }
 
     if (superclassName() != null) { // java.lang.Object can't have a superclass.
