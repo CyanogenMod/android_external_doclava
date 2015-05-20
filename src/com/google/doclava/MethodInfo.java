@@ -405,7 +405,8 @@ public class MethodInfo extends MemberInfo implements AbstractMethodInfo, Resolv
               containingClass(), position()));
         }
       }
-      mThrowsTags = rv.toArray(new ThrowsTagInfo[rv.size()]);
+
+      mThrowsTags = rv.toArray(ThrowsTagInfo.getArray(rv.size()));
     }
     return mThrowsTags;
   }
@@ -423,6 +424,12 @@ public class MethodInfo extends MemberInfo implements AbstractMethodInfo, Resolv
   public ParamTagInfo[] paramTags() {
     if (mParamTags == null) {
       final int N = mParameters.size();
+
+      if (N == 0) {
+          // Early out for empty case.
+          mParamTags = ParamTagInfo.EMPTY_ARRAY;
+          return ParamTagInfo.EMPTY_ARRAY;
+      }
 
       String[] names = new String[N];
       String[] comments = new String[N];
@@ -464,7 +471,7 @@ public class MethodInfo extends MemberInfo implements AbstractMethodInfo, Resolv
       }
 
       // construct the results, and cache them for next time
-      mParamTags = new ParamTagInfo[N];
+      mParamTags = ParamTagInfo.getArray(N);
       for (i = 0; i < N; i++) {
         mParamTags[i] =
             new ParamTagInfo("@param", "@param", names[i] + " " + comments[i], parent(),
