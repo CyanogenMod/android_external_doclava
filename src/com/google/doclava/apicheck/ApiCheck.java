@@ -24,6 +24,7 @@ import java.io.PrintStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.Stack;
 
@@ -41,7 +42,8 @@ public class ApiCheck {
     for (i = 0; i < allArgs.size(); i++) {
       // flags with one value attached
       String flag = allArgs.get(i);
-      if (flag.equals("-error") || flag.equals("-warning") || flag.equals("-hide")) {
+      if (flag.equals("-error") || flag.equals("-warning") || flag.equals("-hide")
+          || flag.equals("-ignoreClass") || flag.equals("-ignorePackage")) {
         String[] arg = new String[2];
         arg[0] = flag;
         arg[1] = allArgs.get(++i);
@@ -66,6 +68,7 @@ public class ApiCheck {
       System.exit(convertToXml(originalArgs[1], originalArgs[2]));
     } else if (originalArgs.length == 4 && "-new_api".equals(originalArgs[0])) {
       // command syntax: -new_api oldapi.txt newapi.txt diff.xml
+      // TODO: Support reading in other options for new_api, such as ignored classes/packages.
       System.exit(newApi(originalArgs[1], originalArgs[2], originalArgs[3]));
     } else {
       ApiCheck acheck = new ApiCheck();
@@ -86,6 +89,11 @@ public class ApiCheck {
       args.add(a);
     }
 
+    // Not having having any classes or packages ignored is the common case.
+    // Avoid a hashCode call in a common loop by not passing in a HashSet in this case.
+    Set<String> ignoredPackages = null;
+    Set<String> ignoredClasses = null;
+
     ArrayList<String[]> flags = ApiCheck.parseFlags(args);
     for (String[] a : flags) {
       if (a[0].equals("-error") || a[0].equals("-warning") || a[0].equals("-hide")) {
@@ -103,6 +111,16 @@ public class ApiCheck {
           System.err.println("Bad argument: " + a[0] + " " + a[1]);
           return new Report(2, Errors.getErrors());
         }
+      } else if (a[0].equals("-ignoreClass")) {
+        if (ignoredClasses == null) {
+          ignoredClasses = new HashSet<String>();
+        }
+        ignoredClasses.add(a[1]);
+      } else if (a[0].equals("-ignorePackage")) {
+        if (ignoredPackages == null) {
+          ignoredPackages = new HashSet<String>();
+        }
+        ignoredPackages.add(a[1]);
       }
     }
 
@@ -126,11 +144,11 @@ public class ApiCheck {
 
     // only run the consistency check if we haven't had XML parse errors
     if (!Errors.hadError) {
-      oldApi.isConsistent(newApi);
+      oldApi.isConsistent(newApi, null, ignoredPackages, ignoredClasses);
     }
 
     if (!Errors.hadError) {
-      oldRemovedApi.isConsistent(newRemovedApi);
+      oldRemovedApi.isConsistent(newRemovedApi, null, ignoredPackages, ignoredClasses);
     }
 
     return new Report(Errors.hadError ? 1 : 0, Errors.getErrors());
