@@ -262,6 +262,8 @@ public class DocFile {
           hdf.setValue("samples", "true");
         } else if (filename.indexOf("ndk/downloads") == 0) {
           hdf.setValue("downloads", "true");
+          fromTemplate = hdf.getValue("page.template", "");
+
         }
       }
       //set metadata for this file in jd_lists_unified
