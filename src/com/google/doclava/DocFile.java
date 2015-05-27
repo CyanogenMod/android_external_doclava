@@ -222,7 +222,7 @@ public class DocFile {
         } else if (filename.indexOf("distribute/analyze") == 0) {
           hdf.setValue("analyze", "true");
         } else if (filename.indexOf("distribute/tools") == 0) {
-          hdf.setValue("disttools", "true");
+          hdf.setValue("essentials", "true");
         } else if (filename.indexOf("distribute/stories") == 0) {
           hdf.setValue("stories", "true");
         }
