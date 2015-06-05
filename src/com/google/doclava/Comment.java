@@ -340,7 +340,8 @@ public class Comment {
       mInlineTagsList.add(new LiteralTagInfo(text, pos));
     } else if (name.equals("@code")) {
       mInlineTagsList.add(new CodeTagInfo(text, pos));
-    } else if (name.equals("@hide") || name.equals("@pending") || name.equals("@doconly")) {
+    } else if (name.equals("@hide") || name.equals("@removed")
+            || name.equals("@pending") || name.equals("@doconly")) {
       // nothing
     } else if (name.equals("@attr")) {
       AttrTagInfo tag = new AttrTagInfo("@attr", "@attr", text, mBase, pos);
