@@ -1,5 +1,7 @@
 apply plugin: 'java'
 
+import com.android.internal.BuildUtils
+
 sourceSets {
     main {
         java {
@@ -10,20 +12,9 @@ sourceSets {
         }
     }
 }
-// TODO put this function in a plugin
-String findToolsJar() {
-    new ByteArrayOutputStream().withStream { os ->
-        project.exec {
-            executable "$rootDir/build/core/find-jdk-tools-jar.sh"
-
-            standardOutput = os
-        }
-        return os.toString().trim()
-    }
-}
 
 dependencies {
-    compile files(findToolsJar())
+    compile files(BuildUtils.findToolsJar(project))
     compile project(path: ':antlr', configuration: 'antlrRuntime')
     compile project(':jsilver')
     compile project(':tagsoup')
