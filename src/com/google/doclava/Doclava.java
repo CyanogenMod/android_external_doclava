@@ -718,8 +718,9 @@ public class Doclava {
     }
 
     int i = 0;
-    for (String s : sorted.keySet()) {
-      PackageInfo pkg = sorted.get(s);
+    for (Map.Entry<String, PackageInfo> entry : sorted.entrySet()) {
+      String s = entry.getKey();
+      PackageInfo pkg = entry.getValue();
 
       if (pkg.isHiddenOrRemoved()) {
         continue;
