@@ -1,5 +1,7 @@
 apply plugin: 'java'
 
+import com.android.internal.BuildUtils
+
 sourceSets {
     main {
         java {
@@ -10,7 +12,9 @@ sourceSets {
         }
     }
 }
+
 // TODO put this function in a plugin
+// TODO remove when prebuilt's case will always properly work with BuildUtils's version.
 String findToolsJar() {
     new ByteArrayOutputStream().withStream { os ->
         project.exec {
@@ -22,12 +26,12 @@ String findToolsJar() {
     }
 }
 
-
 if (project.hasProperty("usePrebuilts") && project.usePrebuilts == "true") {
     repositories {
         maven { url '../../prebuilts/tools/common/m2/repository' }
     }
 
+    // TODO refactor to allow referencing the "gradle way"
     dependencies {
         compile files(findToolsJar())
         compile files('../../prebuilts/misc/common/antlr/antlr-3.4-complete.jar')
@@ -40,7 +44,7 @@ if (project.hasProperty("usePrebuilts") && project.usePrebuilts == "true") {
     }
 } else {
     dependencies {
-        compile files(findToolsJar())
+        compile files(BuildUtils.findToolsJar(project))
         compile project(path: ':antlr', configuration: 'antlrRuntime')
         compile project(':jsilver')
         compile project(':tagsoup')
