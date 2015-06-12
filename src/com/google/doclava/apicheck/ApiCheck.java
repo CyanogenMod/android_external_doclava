@@ -157,6 +157,7 @@ public class ApiCheck {
   public static ApiInfo parseApi(String filename) throws ApiParseException {
     InputStream stream = null;
     Throwable textParsingError = null;
+    Throwable xmlParsingError = null;
     // try it as our format
     try {
       stream = new FileInputStream(filename);
@@ -165,11 +166,8 @@ public class ApiCheck {
     }
     try {
       return ApiFile.parseApi(filename, stream);
-    } catch (ApiParseException ignored) {
-      textParsingError = ignored;
-      if (false) {
-        return null;
-      }
+    } catch (ApiParseException exception) {
+      textParsingError = exception;
     } finally {
       try {
         stream.close();
@@ -183,21 +181,18 @@ public class ApiCheck {
     }
     try {
       return XmlApiFile.parseApi(stream);
-    } catch (ApiParseException ignored) {
-        System.out.println("Couldn't parse API file \"" + filename + "\"");
-        System.out.println("  ...as text: " + textParsingError.toString());
-        System.out.println("  ...as XML:  " + ignored.toString());
-        if (false) {
-          if (textParsingError != null) textParsingError.printStackTrace();
-          ignored.printStackTrace();
-          return null;
-        }
+    } catch (ApiParseException exception) {
+      xmlParsingError = exception;
     } finally {
       try {
         stream.close();
       } catch (IOException ignored) {}
     }
-    return null;
+    // The file has failed to parse both as XML and as text. Build the string in this order as
+    // the message is easier to read with that error at the end.
+    throw new ApiParseException(filename +
+        " failed to parse as xml: \"" + xmlParsingError.getMessage() +
+        "\" and as text: \"" + textParsingError.getMessage() + "\"");
   }
 
   public ApiInfo parseApi(URL url) throws ApiParseException {
