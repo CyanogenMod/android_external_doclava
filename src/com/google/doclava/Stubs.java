@@ -1104,7 +1104,7 @@ public class Stubs {
     returnString = returnString.replaceAll("<", "&lt;");
     returnString = returnString.replaceAll(">", "&gt;");
     returnString = returnString.replaceAll("\"", "&quot;");
-    returnString = returnString.replaceAll("'", "&pos;");
+    returnString = returnString.replaceAll("'", "&apos;");
     return returnString;
   }
 
