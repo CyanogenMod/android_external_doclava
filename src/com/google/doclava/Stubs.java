@@ -1537,9 +1537,7 @@ public class Stubs {
 
   static void writeConstructorKeepList(PrintStream keepListWriter, MethodInfo mi) {
     keepListWriter.print("    ");
-    String name = mi.name();
-    name = name.replace(".", "$");
-    keepListWriter.print(name);
+    keepListWriter.print("<init>");
 
     writeParametersKeepList(keepListWriter, mi, mi.parameters());
     keepListWriter.print(";\n");
