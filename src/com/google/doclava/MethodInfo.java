@@ -449,13 +449,14 @@ public class MethodInfo extends MemberInfo implements AbstractMethodInfo, Resolv
         i++;
       }
 
-      // gather our comments, and complain about misnamed @param tags
+      // Gather our comments, and complain about misnamed @param tags. Note that we must
+      // exclude type parameter tags (such as "@param <T> foo") from this analysis.
       for (ParamTagInfo tag : comment().paramTags()) {
         int index = indexOfParam(tag.parameterName(), names);
         if (index >= 0) {
           comments[index] = tag.parameterComment();
           positions[index] = tag.position();
-        } else {
+        } else if (!tag.isTypeParameter()) {
           Errors.error(Errors.UNKNOWN_PARAM_TAG_NAME, tag.position(),
               "@param tag with name that doesn't match the parameter list: '" + tag.parameterName()
                   + "'");
