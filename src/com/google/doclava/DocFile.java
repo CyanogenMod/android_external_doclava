@@ -246,7 +246,6 @@ public class DocFile {
         hdf.setValue("wear", "true");
       } else if (filename.indexOf("preview") == 0) {
         hdf.setValue("preview", "true");
-        hdf.setValue("page.type", "preview");
       } else if (filename.indexOf("auto") == 0) {
         hdf.setValue("auto", "true");
       } else if (filename.indexOf("tv") == 0) {
