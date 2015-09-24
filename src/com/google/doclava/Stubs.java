@@ -745,7 +745,13 @@ public class Stubs {
         if (!om.isAbstract()) {
           // If the parent is hidden or removed, we can't rely on it to provide
           // the API
-          if (!om.isHiddenOrRemoved()) {
+          // TODO This check will false positive on cases of a method declared
+          // in a non-hidden class, overidden in a hidden class, and then overidden
+          // again in a non-hidden subclass of the hidden class
+          // (non-hidden->hidden->non-hidden), and will redundantly output a method
+          // entry for the non-hidden sub-subclass. Thankfully, this pattern tends
+          // to be quite rare.
+          if (!om.isHiddenOrRemoved() && !om.containingClass().isHiddenOrRemoved()) {
             // If the only "override" turns out to be in our own class
             // (which sometimes happens in concrete subclasses of
             // abstract base classes), it's not really an override
