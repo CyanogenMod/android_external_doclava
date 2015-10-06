@@ -51,8 +51,8 @@ public class DocFile {
     }
   }
 
-  public static String[] DEVSITE_VALID_LANGS = {"en", "es","ja", "ko",
-      "ru", "zh-cn", "zh-tw", "pt-br"};
+  public static String[] DEVSITE_VALID_LANGS = {"en", "es", "in", "ja", "ko",
+      "ru", "vi", "zh-cn", "zh-tw", "pt-br"};
 
   public static String getPathRoot(String filename) {
     //look for a valid lang string in the file path. If found,
