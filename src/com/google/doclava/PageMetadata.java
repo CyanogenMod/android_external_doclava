@@ -144,7 +144,7 @@ public class PageMetadata {
       pageMeta.setKeywords(getPageTagsNormalized(hdf, "page.tags"));
       pageMeta.setTags(getPageTagsNormalized(hdf, "meta.tags"));
       pageMeta.setImage(getImageUrlNormalized(hdf.getValue("page.image", "")));
-      pageMeta.setLang(getLangStringNormalized(filename));
+      pageMeta.setLang(getLangStringNormalized(hdf, filename));
       pageMeta.setType(getStringValueNormalized(hdf, "page.type"));
       appendMetaNodeByType(pageMeta, tagList);
     }
@@ -370,19 +370,24 @@ public class PageMetadata {
   * @param filename A path string to the file relative to root.
   * @return A normalized lang value.
   */
-  public static String getLangStringNormalized(String filename) {
-    String[] stripStr = filename.toLowerCase().split("\\/");
+  public static String getLangStringNormalized(Data data, String filename) {
+    String[] stripStr = filename.toLowerCase().split("\\/", 3);
     String outFrag = "en";
+    String pathCanonical = filename;
     if (stripStr.length > 0) {
       for (String t : DocFile.DEVSITE_VALID_LANGS) {
         if ("intl".equals(stripStr[0])) {
           if (t.equals(stripStr[1])) {
             outFrag = stripStr[1];
+            //extract the root url (exclusive of intl/nn)
+            pathCanonical = stripStr[2];
             break;
           }
         }
       }
     }
+    //extract the root url (exclusive of intl/nn)
+    data.setValue("path.canonical", pathCanonical);
     return outFrag;
   }
 
