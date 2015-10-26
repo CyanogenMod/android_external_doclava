@@ -68,7 +68,8 @@ public class Doclava {
   public static final boolean SORT_BY_NAV_GROUPS = true;
   /* Debug output for PageMetadata, format urls from site root */
   public static boolean META_DBG=false;
-
+  /* Remove after updated templates are launched */
+  public static boolean USE_UPDATED_TEMPLATES = false;
   public static String outputPathBase = "/";
   public static ArrayList<String> inputPathHtmlDirs = new ArrayList<String>();
   public static ArrayList<String> inputPathHtmlDir2 = new ArrayList<String>();
@@ -165,7 +166,12 @@ public class Doclava {
       if (a[0].equals("-d")) {
         outputPathBase = outputPathHtmlDirs = ClearPage.outputDir = a[1];
       } else if (a[0].equals("-templatedir")) {
-        ClearPage.addTemplateDir(a[1]);
+        if (USE_UPDATED_TEMPLATES) {
+          /* remove with updated templates are launched */
+          ClearPage.addTemplateDir("build/tools/droiddoc/templates-sdk-dev");
+        } else {
+          ClearPage.addTemplateDir(a[1]);
+        }
       } else if (a[0].equals("-hdf")) {
         mHDFData.add(new String[] {a[1], a[2]});
       } else if (a[0].equals("-knowntags")) {
@@ -257,6 +263,8 @@ public class Doclava {
         offlineMode = true;
       } else if (a[0].equals("-metadataDebug")) {
         META_DBG = true;
+      } else if (a[0].equals("-useUpdatedTemplates")) {
+        USE_UPDATED_TEMPLATES = true;
       } else if (a[0].equals("-federate")) {
         try {
           String name = a[1];
@@ -392,7 +400,11 @@ public class Doclava {
   }
       // Write metadata for all processed files to jd_lists_unified.js in out dir
       if (!sTaglist.isEmpty()) {
-        PageMetadata.WriteList(sTaglist);
+        if (USE_UPDATED_TEMPLATES) {
+          PageMetadata.WriteListByLang(sTaglist);
+        } else {
+          PageMetadata.WriteList(sTaglist);
+        }
       }
     }
 
@@ -669,6 +681,9 @@ public class Doclava {
     if (option.equals("-metadataDebug")) {
       return 1;
     }
+    if (option.equals("-useUpdatedTemplates")) {
+      return 1;
+    }
     if (option.equals("-documentannotations")) {
       return 2;
     }
@@ -804,7 +819,8 @@ public class Doclava {
               Data data = makeHDF();
               String hdfValue = data.getValue("sac") == null ? "" : data.getValue("sac");
               boolean allowExcepted = hdfValue.equals("true") ? true : false;
-              ClearPage.copyFile(allowExcepted, f, templ);
+              boolean append = false;
+              ClearPage.copyFile(allowExcepted, f, templ, append);
         }
       } else if (f.isDirectory()) {
         writeDirectory(f, relative + f.getName() + "/", js);
