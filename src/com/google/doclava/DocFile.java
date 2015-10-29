@@ -238,8 +238,8 @@ public class DocFile {
         hdf.setValue("page.type", "devices");
       } else if (filename.indexOf("source") == 0) {
         hdf.setValue("source", "true");
-      } else if (filename.indexOf("accessories") == 0) {
-        hdf.setValue("accessories", "true");
+      } else if (filename.indexOf("security") == 0) {
+        hdf.setValue("security", "true");
       } else if (filename.indexOf("compatibility") == 0) {
         hdf.setValue("compatibility", "true");
       } else if (filename.indexOf("wear") == 0) {
