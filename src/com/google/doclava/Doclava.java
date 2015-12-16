@@ -44,7 +44,7 @@ public class Doclava {
   private static final String SDK_CONSTANT_TYPE_BROADCAST_ACTION =
       "android.annotation.SdkConstant.SdkConstantType.BROADCAST_INTENT_ACTION";
   private static final String SDK_CONSTANT_TYPE_SERVICE_ACTION =
-      "android.annotation.SdkConstant.SdkConstantType.SERVICE_INTENT_ACTION";
+      "android.annotation.SdkConstant.SdkConstantType.SERVICE_ACTION";
   private static final String SDK_CONSTANT_TYPE_CATEGORY =
       "android.annotation.SdkConstant.SdkConstantType.INTENT_CATEGORY";
   private static final String SDK_CONSTANT_TYPE_FEATURE =
