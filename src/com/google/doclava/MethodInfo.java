@@ -252,7 +252,7 @@ public class MethodInfo extends MemberInfo implements AbstractMethodInfo, Resolv
         new MethodInfo(getRawCommentText(), mTypeParameters, name(), signature(),
             newContainingClass, realContainingClass(), isPublic(), isProtected(),
             isPackagePrivate(), isPrivate(), isFinal(), isStatic(), isSynthetic(), mIsAbstract,
-            mIsSynchronized, mIsNative, mIsAnnotationElement, kind(), mFlatSignature,
+            mIsSynchronized, mIsNative, mIsDefault, mIsAnnotationElement, kind(), mFlatSignature,
             mOverriddenMethod, returnType, mParameters, mThrownExceptions, position(),
             annotations());
     result.init(mDefaultAnnotationElementValue);
@@ -263,10 +263,10 @@ public class MethodInfo extends MemberInfo implements AbstractMethodInfo, Resolv
       String signature, ClassInfo containingClass, ClassInfo realContainingClass, boolean isPublic,
       boolean isProtected, boolean isPackagePrivate, boolean isPrivate, boolean isFinal,
       boolean isStatic, boolean isSynthetic, boolean isAbstract, boolean isSynchronized,
-      boolean isNative, boolean isAnnotationElement, String kind, String flatSignature,
-      MethodInfo overriddenMethod, TypeInfo returnType, ArrayList<ParameterInfo> parameters,
-      ArrayList<ClassInfo> thrownExceptions, SourcePositionInfo position,
-      ArrayList<AnnotationInstanceInfo> annotations) {
+      boolean isNative, boolean isDefault, boolean isAnnotationElement, String kind,
+      String flatSignature, MethodInfo overriddenMethod, TypeInfo returnType,
+      ArrayList<ParameterInfo> parameters, ArrayList<ClassInfo> thrownExceptions,
+      SourcePositionInfo position, ArrayList<AnnotationInstanceInfo> annotations) {
     // Explicitly coerce 'final' state of Java6-compiled enum values() method, to match
     // the Java5-emitted base API description.
     super(rawCommentText, name, signature, containingClass, realContainingClass, isPublic,
@@ -274,19 +274,13 @@ public class MethodInfo extends MemberInfo implements AbstractMethodInfo, Resolv
         ((name.equals("values") && containingClass.isEnum()) ? true : isFinal),
         isStatic, isSynthetic, kind, position, annotations);
 
-    // The underlying MethodDoc for an interface's declared methods winds up being marked
-    // non-abstract. Correct that here by looking at the immediate-parent class, and marking
-    // this method abstract if it is an unimplemented interface method.
-    if (containingClass.isInterface()) {
-      isAbstract = true;
-    }
-
     mReasonOpened = "0:0";
     mIsAnnotationElement = isAnnotationElement;
     mTypeParameters = typeParameters;
     mIsAbstract = isAbstract;
     mIsSynchronized = isSynchronized;
     mIsNative = isNative;
+    mIsDefault = isDefault;
     mFlatSignature = flatSignature;
     mOverriddenMethod = overriddenMethod;
     mReturnType = returnType;
@@ -308,6 +302,10 @@ public class MethodInfo extends MemberInfo implements AbstractMethodInfo, Resolv
 
   public boolean isNative() {
     return mIsNative;
+  }
+
+  public boolean isDefault() {
+    return mIsDefault;
   }
 
   public String flatSignature() {
@@ -576,6 +574,7 @@ public class MethodInfo extends MemberInfo implements AbstractMethodInfo, Resolv
       data.setValue(base + ".abstract", mIsAbstract ? "abstract" : "");
     }
 
+    data.setValue(base + ".default", mIsDefault ? "default" : "");
     data.setValue(base + ".synchronized", mIsSynchronized ? "synchronized" : "");
     data.setValue(base + ".final", isFinal() ? "final" : "");
     data.setValue(base + ".static", isStatic() ? "static" : "");
@@ -719,6 +718,7 @@ public class MethodInfo extends MemberInfo implements AbstractMethodInfo, Resolv
   private boolean mIsVarargs;
   private boolean mDeprecatedKnown;
   private boolean mIsDeprecated;
+  private boolean mIsDefault;
   private ArrayList<ParameterInfo> mParameters;
   private ArrayList<ClassInfo> mThrownExceptions;
   private String[] mParamStrings;

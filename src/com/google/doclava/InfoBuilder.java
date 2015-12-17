@@ -1069,7 +1069,7 @@ public class InfoBuilder {
                 modifiers.isPrivate(), modifiers.isFinal(),
                 modifiers.isStatic(), modifiers.isSynthetic(),
                 modifiers.isAbstract(), modifiers.isSynchronized(),
-                false, isAnnotationElement, kind, flatSignature.toString(),
+                false, modifiers.isDefault(), isAnnotationElement, kind, flatSignature.toString(),
                 null, returnType, parameters, thrownExceptions,
                 commentAndPosition.getPosition(), modifiers.getAnnotations());
 
@@ -1852,6 +1852,7 @@ public class InfoBuilder {
         private boolean mIsSynthetic = false;
         private boolean mIsSynchronized = false;
         private boolean mIsStrictfp = false;
+        private boolean mIsDefault = false;
         private InfoBuilder mBuilder;
         private ArrayList<AnnotationInstanceInfo> mAnnotations;
 
@@ -1893,6 +1894,8 @@ public class InfoBuilder {
                     mIsSynchronized = true;
                 }  else if ("strictfp".equals(modifier)) {
                     mIsStrictfp = true;
+                }  else if ("default".equals(modifier)) {
+                    mIsDefault = true;
                 } else if ("annotation".equals(modifier)) {
                     mAnnotations.add(buildAnnotationInstance((ParseTree) child, mBuilder));
                 }
@@ -1946,6 +1949,10 @@ public class InfoBuilder {
         @SuppressWarnings("unused")
         public boolean isStrictfp() {
             return mIsStrictfp;
+        }
+
+        public boolean isDefault() {
+            return mIsDefault;
         }
 
         public ArrayList<AnnotationInstanceInfo> getAnnotations() {
