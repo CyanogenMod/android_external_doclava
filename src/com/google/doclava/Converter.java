@@ -404,8 +404,9 @@ public class Converter {
                     m.name(), m.signature(), Converter.obtainClass(m.containingClass()),
                     Converter.obtainClass(m.containingClass()), m.isPublic(), m.isProtected(), m
                     .isPackagePrivate(), m.isPrivate(), m.isFinal(), m.isStatic(), m.isSynthetic(),
-                    m.isAbstract(), m.isSynchronized(), m.isNative(), true, "annotationElement",
-                    m.flatSignature(), Converter.obtainMethod(m.overriddenMethod()),
+                    m.isAbstract(), m.isSynchronized(), m.isNative(), m.isDefault(), true,
+                    "annotationElement", m.flatSignature(),
+                    Converter.obtainMethod(m.overriddenMethod()),
                     Converter.obtainType(m.returnType()),
                     new ArrayList<ParameterInfo>(Arrays.asList(
                             Converter.convertParameters(m.parameters(), m))),
@@ -425,8 +426,8 @@ public class Converter {
                     Converter.obtainClass(m.containingClass()),
                     Converter.obtainClass(m.containingClass()), m.isPublic(), m.isProtected(),
                     m.isPackagePrivate(), m.isPrivate(), m.isFinal(), m.isStatic(), m.isSynthetic(),
-                    m.isAbstract(), m.isSynchronized(), m.isNative(), false, "method",
-                    m.flatSignature(), Converter.obtainMethod(m.overriddenMethod()),
+                    m.isAbstract(), m.isSynchronized(), m.isNative(), m.isDefault(), false,
+                    "method", m.flatSignature(), Converter.obtainMethod(m.overriddenMethod()),
                     Converter.obtainType(m.returnType()),
                     new ArrayList<ParameterInfo>(Arrays.asList(
                             Converter.convertParameters(m.parameters(), m))),
@@ -459,7 +460,7 @@ public class Converter {
                 name, m.signature(), Converter.obtainClass(m.containingClass()), Converter
                 .obtainClass(m.containingClass()), m.isPublic(), m.isProtected(), m
                 .isPackagePrivate(), m.isPrivate(), m.isFinal(), m.isStatic(), m.isSynthetic(),
-                false, m.isSynchronized(), m.isNative(), false, "constructor", m.flatSignature(),
+                false, m.isSynchronized(), m.isNative(), false/*isDefault*/, false, "constructor", m.flatSignature(),
                 null, null, new ArrayList<ParameterInfo>(Arrays.asList(Converter.convertParameters(m.parameters(), m))),
                 new ArrayList<ClassInfo>(Arrays.asList(Converter.convertClasses(m.thrownExceptions()))), Converter.convertSourcePosition(m
                     .position()), new ArrayList<AnnotationInstanceInfo>(Arrays.asList(Converter.convertAnnotationInstances(m.annotations()))));
