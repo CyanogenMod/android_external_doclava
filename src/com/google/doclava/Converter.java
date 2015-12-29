@@ -227,7 +227,8 @@ public class Converter {
     if (p == null) return null;
     ParameterInfo pi =
         new ParameterInfo(p.name(), p.typeName(), Converter.obtainType(p.type()), isVarArg,
-          Converter.convertSourcePosition(pos));
+          Converter.convertSourcePosition(pos),
+          Arrays.asList(Converter.convertAnnotationInstances(p.annotations())));
     return pi;
   }
 

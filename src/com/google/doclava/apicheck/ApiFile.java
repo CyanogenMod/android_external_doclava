@@ -29,7 +29,9 @@ import com.google.doclava.TypeInfo;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedList;
+import java.util.List;
 
 class ApiFile {
 
@@ -488,10 +490,13 @@ class ApiFile {
       } else {
         throw new ApiParseException("expected , found " + token, tokenizer.getLine());
       }
+      // api file does not preserve annotations.
+      List<AnnotationInstanceInfo> annotations = Collections.emptyList();
       method.addParameter(new ParameterInfo(name, type,
             Converter.obtainTypeFromString(type),
             type.endsWith("..."),
-            tokenizer.pos()));
+            tokenizer.pos(),
+            annotations));
       if (type.endsWith("...")) {
         method.setVarargs(true);
       }

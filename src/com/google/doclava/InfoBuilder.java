@@ -29,6 +29,7 @@ import org.antlr.runtime.tree.Tree;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -1142,7 +1143,8 @@ public class InfoBuilder {
                     commentAndPosition.setPosition(paramPart);
 
                     parameters.add(new ParameterInfo(name, type.qualifiedTypeName(), type,
-                            isVarArg, commentAndPosition.getPosition()));
+                            isVarArg, commentAndPosition.getPosition(),
+                            Collections.<AnnotationInstanceInfo>emptyList()));
                 }
             }
         }

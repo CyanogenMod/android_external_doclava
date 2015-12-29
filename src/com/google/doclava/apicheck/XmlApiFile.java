@@ -35,6 +35,8 @@ import org.xml.sax.helpers.XMLReaderFactory;
 
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Stack;
 
 class XmlApiFile extends DefaultHandler {
@@ -202,8 +204,10 @@ class XmlApiFile extends DefaultHandler {
       TypeInfo type = Converter.obtainTypeFromString(typeName);
       boolean isVarArg = typeName.endsWith("...");
       SourcePositionInfo position = null;
-      
-      mCurrentMethod.addParameter(new ParameterInfo(name, typeName, type, isVarArg, position));
+      List<AnnotationInstanceInfo> annotations = Collections.emptyList();
+
+      mCurrentMethod.addParameter(
+          new ParameterInfo(name, typeName, type, isVarArg, position, annotations));
       mCurrentMethod.setVarargs(isVarArg);
     } else if (qName.equals("exception")) {
       mCurrentMethod.addException(attributes.getValue("type"));

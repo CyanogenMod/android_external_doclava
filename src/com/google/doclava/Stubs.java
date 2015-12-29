@@ -667,7 +667,9 @@ public class Stubs {
     int count = 1;
     int size = method.parameters().size();
     for (ParameterInfo param : method.parameters()) {
-      stream.print(comma + fullParameterTypeName(method, param.type(), count == size) + " "
+      stream.print(comma);
+      writeAnnotations(stream, param.annotations(), false);
+      stream.print(fullParameterTypeName(method, param.type(), count == size) + " "
           + param.name());
       comma = ", ";
       count++;
