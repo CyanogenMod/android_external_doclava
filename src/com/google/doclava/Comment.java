@@ -164,9 +164,15 @@ public class Comment {
   }
 
   private int findEndIndexOfInlineTag(String text, int fromIndex, int toIndex) {
+      int braceDepth = 0;
       for (int i = fromIndex; i < toIndex; i++) {
-          if (text.charAt(i) == '}') {
-              return i;
+          if (text.charAt(i) == '{') {
+              braceDepth++;
+          } else if (text.charAt(i) == '}') {
+              braceDepth--;
+              if (braceDepth == 0) {
+                  return i;
+              }
           }
       }
 
