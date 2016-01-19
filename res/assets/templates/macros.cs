@@ -126,7 +126,19 @@ def:tag_list(tags) ?><?cs
   /each ?><?cs
 /def ?>
 
-<?cs # Show the short-form description of something.  These come from shortDescr and deprecated ?><?cs 
+<?cs # Print output for block tags that are not "standard" javadoc tags ?><?cs
+def:block_tag_list(tags) ?><?cs
+  each:tag = tags ?><?cs
+      if:tag.kind == "@apiNote" ?>
+        <div class="jd-tagdata">
+          <h5 class="jd-tagtitle">API Note:</h5>
+          <ul class="nolist"><li><?cs call:tag_list(tag.commentTags) ?></li></ul>
+        </div><?cs
+      /if ?><?cs
+  /each ?><?cs
+/def ?>
+
+<?cs # Show the short-form description of something.  These come from shortDescr and deprecated ?><?cs
 def:short_descr(obj) ?><?cs
   if:subcount(obj.deprecated) ?><em><?cs
     if:obj.deprecatedsince ?>
@@ -249,6 +261,9 @@ def:description(obj) ?><?cs
       </ul>
   </div><?cs 
   /if ?><?cs 
+  if:subcount(obj.blockTags) ?>
+    <?cs call:block_tag_list(obj.blockTags) ?><?cs
+  /if ?><?cs
   if:subcount(obj.paramTags) ?>
   <div class="jd-tagdata">
       <h5 class="jd-tagtitle">Parameters</h5>
