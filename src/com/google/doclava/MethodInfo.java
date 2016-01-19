@@ -318,6 +318,10 @@ public class MethodInfo extends MemberInfo implements AbstractMethodInfo, Resolv
     return new InlineTags();
   }
 
+  public TagInfo[] blockTags() {
+    return comment().blockTags();
+  }
+
   public InheritedTags firstSentenceTags() {
     return new FirstSentenceTags();
   }
@@ -582,6 +586,7 @@ public class MethodInfo extends MemberInfo implements AbstractMethodInfo, Resolv
 
     TagInfo.makeHDF(data, base + ".shortDescr", firstSentenceTags());
     TagInfo.makeHDF(data, base + ".descr", inlineTags());
+    TagInfo.makeHDF(data, base + ".blockTags", blockTags());
     TagInfo.makeHDF(data, base + ".deprecated", deprecatedTags());
     TagInfo.makeHDF(data, base + ".seeAlso", seeTags());
     data.setValue(base + ".since", getSince());
