@@ -28,6 +28,7 @@ public class Comment {
       Pattern.compile("((.*?)\\.)[ \t\r\n\\<](.*)", Pattern.DOTALL);
 
   private static final Set<String> KNOWN_TAGS = new HashSet<String>(Arrays.asList(new String[] {
+          "@apiNote",
           "@author",
           "@since",
           "@version",
@@ -362,6 +363,8 @@ public class Comment {
       mUndeprecateTagsList.add(new TextTagInfo("@undeprecate", "@undeprecate", text, pos));
     } else if (name.equals("@include") || name.equals("@sample")) {
       mInlineTagsList.add(new SampleTagInfo(name, "@include", text, mBase, pos));
+    } else if (name.equals("@apiNote")) {
+      mTagsList.add(new ParsedTagInfo(name, name, text, mBase, pos));
     } else {
       boolean known = KNOWN_TAGS.contains(name);
       if (!known) {
@@ -428,6 +431,11 @@ public class Comment {
       }
     }
     return results.toArray(TagInfo.getArray(results.size()));
+  }
+
+  public TagInfo[] blockTags() {
+    init();
+    return mTags;
   }
 
   public ParamTagInfo[] paramTags() {
@@ -528,6 +536,7 @@ public class Comment {
     mInitialized = true;
 
     mInlineTags = mInlineTagsList.toArray(TagInfo.getArray(mInlineTagsList.size()));
+    mTags = mTagsList.toArray(TagInfo.getArray(mTagsList.size()));
     mParamTags = mParamTagsList.toArray(ParamTagInfo.getArray(mParamTagsList.size()));
     mSeeTags = mSeeTagsList.toArray(SeeTagInfo.getArray(mSeeTagsList.size()));
     mThrowsTags = mThrowsTagsList.toArray(ThrowsTagInfo.getArray(mThrowsTagsList.size()));
@@ -539,6 +548,7 @@ public class Comment {
     mAttrTags = mAttrTagsList.toArray(AttrTagInfo.getArray(mAttrTagsList.size()));
     mBriefTags = mBriefTagsList.toArray(TagInfo.getArray(mBriefTagsList.size()));
 
+    mTagsList = null;
     mParamTagsList = null;
     mSeeTagsList = null;
     mThrowsTagsList = null;
