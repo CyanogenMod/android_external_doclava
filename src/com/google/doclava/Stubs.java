@@ -632,6 +632,9 @@ public class Stubs {
 
     writeAnnotations(stream, method.annotations(), method.isDeprecated());
 
+    if (method.isDefault()) {
+      stream.print("default ");
+    }
     stream.print(method.scope() + " ");
     if (method.isStatic()) {
       stream.print("static ");
@@ -682,7 +685,7 @@ public class Stubs {
         comma = ", ";
       }
     }
-    if (method.isAbstract() || method.isNative() || method.containingClass().isInterface()) {
+    if (method.isAbstract() || method.isNative() || (method.containingClass().isInterface() && (!method.isDefault() && !method.isStatic()))) {
       stream.println(";");
     } else {
       stream.print(" { ");
@@ -1353,6 +1356,9 @@ public class Stubs {
   static void writeMethodApi(PrintStream apiWriter, MethodInfo mi) {
     apiWriter.print("    method ");
     apiWriter.print(mi.scope());
+    if (mi.isDefault()) {
+      apiWriter.print(" default");
+    }
     if (mi.isStatic()) {
       apiWriter.print(" static");
     }
