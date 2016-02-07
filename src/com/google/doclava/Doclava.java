@@ -70,6 +70,8 @@ public class Doclava {
   public static boolean META_DBG=false;
   /* Remove after updated templates are launched */
   public static boolean USE_UPDATED_TEMPLATES = false;
+  /* Show Preview navigation and process preview docs */
+  public static boolean INCLUDE_PREVIEW = false;
   public static String outputPathBase = "/";
   public static ArrayList<String> inputPathHtmlDirs = new ArrayList<String>();
   public static ArrayList<String> inputPathHtmlDir2 = new ArrayList<String>();
@@ -265,6 +267,8 @@ public class Doclava {
         META_DBG = true;
       } else if (a[0].equals("-useUpdatedTemplates")) {
         USE_UPDATED_TEMPLATES = true;
+      } else if (a[0].equals("-includePreview")) {
+        INCLUDE_PREVIEW = true;
       } else if (a[0].equals("-federate")) {
         try {
           String name = a[1];
@@ -682,6 +686,9 @@ public class Doclava {
       return 1;
     }
     if (option.equals("-useUpdatedTemplates")) {
+      return 1;
+    }
+    if (option.equals("-includePreview")) {
       return 1;
     }
     if (option.equals("-documentannotations")) {
