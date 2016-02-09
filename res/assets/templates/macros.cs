@@ -75,6 +75,15 @@ def:cond_link(text, root, path, condition) ?><?cs
   if:condition ?><a href="<?cs var:root ?><?cs var:path ?>"><?cs /if ?><?cs var:text ?><?cs if:condition ?></a><?cs /if ?><?cs
 /def ?>
 
+<?cs # A comma separated parameter list ?><?cs
+def:parameter_list(params) ?><?cs
+  each:param = params ?><?cs
+      call:simple_type_link(param.type)?> <?cs
+      var:param.name ?><?cs
+      if: name(param)!=subcount(params)-1?>, <?cs /if ?><?cs
+  /each ?><?cs
+/def ?>
+
 <?cs # Print a list of tags (e.g. description text ?><?cs
 def:tag_list(tags) ?><?cs
   each:tag = tags ?><?cs
