@@ -268,27 +268,14 @@ def:description(obj) ?><?cs
           /if ?><?cs var:param.name ?><?cs
           if:param.isTypeParameter ?>&gt;<?cs
           /if ?></code></td>
-        <td width="100%"><?cs call:tag_list(param.comment) ?></td>
+        <td width="100%">
+          <code><?cs var:param.kind ?></code><?cs
+          if:string.find(param.comment.0.text, "<!--") != 0
+            ?>:<?cs # Do not print if param comment is an HTML comment ?><?cs
+          /if ?>
+          <?cs call:tag_list(param.comment) ?></td>
       </tr><?cs
     /each ?>
-    </table><?cs
-  #
-  # If no param tags found, but there are known params, print those instead
-  #
-  ?><?cs
-  elif:subcount(obj.params) ?>
-    <table class="responsive">
-      <tr><th colspan=2>Parameters</th></tr><?cs
-      each:param = obj.params ?>
-        <tr>
-          <td><code><?cs
-            if:param.isTypeParameter ?>&lt;<?cs
-            /if ?><?cs var:param.name ?><?cs
-            if:param.isTypeParameter ?>&gt;<?cs
-            /if ?></code></td>
-          <td width="100%"><!-- no param description in source --></td>
-        </tr><?cs
-      /each ?>
     </table><?cs
   /if ?><?cs
   #
