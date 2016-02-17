@@ -118,7 +118,6 @@ public class DocFile {
     if (hdf == null) {
       hdf = Doclava.makeHDF();
     }
-    Boolean isPreviewPage = false;
     String filedata = readFile(docfile);
 
     // The document is properties up until the line "@jd:body".
@@ -287,10 +286,9 @@ public class DocFile {
           hdf.setValue("page.type", "about");
           hdf.setValue("page.category", "wear");
         } else if (filename.indexOf("preview") == 0) {
-          hdf.setValue("preview", "true");
           hdf.setValue("page.type", "develop");
           hdf.setValue("page.category", "preview");
-          isPreviewPage = true;
+          hdf.setValue("preview", "true");
         } else if (filename.indexOf("auto") == 0) {
           hdf.setValue("auto", "true");
           hdf.setValue("about", "true");
@@ -392,6 +390,8 @@ public class DocFile {
         } else if (filename.indexOf("wear") == 0) {
           hdf.setValue("wear", "true");
         } else if (filename.indexOf("preview") == 0) {
+          hdf.setValue("page.type", "develop");
+          hdf.setValue("page.category", "preview");
           hdf.setValue("preview", "true");
         } else if (filename.indexOf("auto") == 0) {
           hdf.setValue("auto", "true");
@@ -412,16 +412,13 @@ public class DocFile {
           }
         }
       }
-      //exclude preview pages from processing unless specifically requested
-      if (!isPreviewPage || Doclava.INCLUDE_PREVIEW) {
-        //set metadata for this file in jd_lists_unified
-        PageMetadata.setPageMetadata(docfile, relative, outfile, hdf, Doclava.sTaglist);
+      //set metadata for this file in jd_lists_unified
+      PageMetadata.setPageMetadata(docfile, relative, outfile, hdf, Doclava.sTaglist);
 
-        if (fromTemplate.equals("sdk")) {
-          ClearPage.write(hdf, "sdkpage.cs", outfile);
-        } else {
-          ClearPage.write(hdf, "docpage.cs", outfile);
-        }
+      if (fromTemplate.equals("sdk")) {
+        ClearPage.write(hdf, "sdkpage.cs", outfile);
+      } else {
+        ClearPage.write(hdf, "docpage.cs", outfile);
       }
     }
   } // writePage
