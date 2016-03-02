@@ -135,6 +135,18 @@ def:block_tag_list(tags) ?><?cs
           <ul class="nolist"><li><?cs call:tag_list(tag.commentTags) ?></li></ul>
         </div><?cs
       /if ?><?cs
+      if:tag.kind == "@implSpec" ?>
+        <div class="jd-tagdata">
+          <h5 class="jd-tagtitle">Implementation Requirements:</h5>
+          <ul class="nolist"><li><?cs call:tag_list(tag.commentTags) ?></li></ul>
+        </div><?cs
+      /if ?><?cs
+      if:tag.kind == "@implNote" ?>
+        <div class="jd-tagdata">
+          <h5 class="jd-tagtitle">Implementation Note:</h5>
+          <ul class="nolist"><li><?cs call:tag_list(tag.commentTags) ?></li></ul>
+        </div><?cs
+      /if ?><?cs
   /each ?><?cs
 /def ?>
 

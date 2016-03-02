@@ -42,6 +42,8 @@ public class Comment {
           "@sample",
           "@include",
           "@serial",
+          "@implNote",
+          "@implSpec",
       }));
 
   public Comment(String text, ContainerInfo base, SourcePositionInfo sp) {
@@ -363,7 +365,7 @@ public class Comment {
       mUndeprecateTagsList.add(new TextTagInfo("@undeprecate", "@undeprecate", text, pos));
     } else if (name.equals("@include") || name.equals("@sample")) {
       mInlineTagsList.add(new SampleTagInfo(name, "@include", text, mBase, pos));
-    } else if (name.equals("@apiNote")) {
+    } else if (name.equals("@apiNote") || name.equals("@implSpec") || name.equals("@implNote")) {
       mTagsList.add(new ParsedTagInfo(name, name, text, mBase, pos));
     } else {
       boolean known = KNOWN_TAGS.contains(name);
