@@ -390,7 +390,7 @@ public class DocFile {
         } else if (filename.indexOf("wear") == 0) {
           hdf.setValue("wear", "true");
         } else if (filename.indexOf("preview") == 0) {
-          hdf.setValue("page.type", "about");
+          hdf.setValue("page.type", "preview");
           hdf.setValue("page.category", "preview");
           hdf.setValue("preview", "true");
         } else if (filename.indexOf("auto") == 0) {
