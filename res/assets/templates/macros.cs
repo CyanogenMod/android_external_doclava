@@ -84,6 +84,10 @@ def:parameter_list(params) ?><?cs
   /each ?><?cs
 /def ?>
 
+<?cs def:doc_root_override()
+  ?><?cs var:toroot ?><?cs
+/def ?>
+
 <?cs # Print a list of tags (e.g. description text ?><?cs
 def:tag_list(tags) ?><?cs
   each:tag = tags ?><?cs
@@ -107,7 +111,7 @@ def:tag_list(tags) ?><?cs
       elif:tag.kind == "@samplecode" ?><pre><?cs var:tag.text ?></pre><?cs
       elif:tag.name == "@sample" ?><pre><?cs var:tag.text ?></pre><?cs
       elif:tag.name == "@include" ?><?cs var:tag.text ?><?cs
-      elif:tag.kind == "@docRoot" ?><?cs var:toroot ?><?cs
+      elif:tag.kind == "@docRoot" ?><?cs call:doc_root_override() ?><?cs
       elif:tag.kind == "@sdkCurrent" ?><?cs var:sdk.current ?><?cs
       elif:tag.kind == "@sdkCurrentVersion" ?><?cs var:sdk.version ?><?cs
       elif:tag.kind == "@sdkCurrentRelId" ?><?cs var:sdk.rel.id ?><?cs

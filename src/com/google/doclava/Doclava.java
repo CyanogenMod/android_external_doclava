@@ -101,6 +101,7 @@ public class Doclava {
   public static boolean documentAnnotations = false;
   public static String documentAnnotationsPath = null;
   public static Map<String, String> annotationDocumentationMap = null;
+  public static boolean referenceOnly = false;
 
   public static JSilver jSilver = null;
 
@@ -291,6 +292,8 @@ public class Doclava {
       } else if (a[0].equals("-documentannotations")) {
         documentAnnotations = true;
         documentAnnotationsPath = a[1];
+      } else if (a[0].equals("-referenceonly")) {
+        referenceOnly = true;
       }
     }
 
@@ -341,26 +344,28 @@ public class Doclava {
         TodoFile.writeTodoFile(todoFile);
       }
 
-  if (samplesRef) {
+      if (samplesRef) {
         // always write samples without offlineMode behaviors
-  writeSamples(false, sampleCodes, SORT_BY_NAV_GROUPS);
-  }
-
-      // HTML2 Pages -- Generate Pages from optional secondary dir
-      if (!inputPathHtmlDir2.isEmpty()) {
-        if (!outputPathHtmlDir2.isEmpty()) {
-          ClearPage.outputDir = outputPathBase + "/" + outputPathHtmlDir2;
-        }
-        ClearPage.htmlDirs = inputPathHtmlDir2;
-        writeHTMLPages();
-        ClearPage.htmlDirs = inputPathHtmlDirs;
+        writeSamples(false, sampleCodes, SORT_BY_NAV_GROUPS);
       }
 
-      // HTML Pages
-      if (!ClearPage.htmlDirs.isEmpty()) {
-        ClearPage.htmlDirs = inputPathHtmlDirs;
-        ClearPage.outputDir = outputPathHtmlDirs;
-        writeHTMLPages();
+      if (!referenceOnly) {
+        // HTML2 Pages -- Generate Pages from optional secondary dir
+        if (!inputPathHtmlDir2.isEmpty()) {
+          if (!outputPathHtmlDir2.isEmpty()) {
+            ClearPage.outputDir = outputPathBase + "/" + outputPathHtmlDir2;
+          }
+          ClearPage.htmlDirs = inputPathHtmlDir2;
+          writeHTMLPages();
+          ClearPage.htmlDirs = inputPathHtmlDirs;
+        }
+
+        // HTML Pages
+        if (!ClearPage.htmlDirs.isEmpty()) {
+          ClearPage.htmlDirs = inputPathHtmlDirs;
+          ClearPage.outputDir = outputPathHtmlDirs;
+          writeHTMLPages();
+        }
       }
 
       writeAssets();
@@ -693,6 +698,9 @@ public class Doclava {
     }
     if (option.equals("-documentannotations")) {
       return 2;
+    }
+    if (option.equals("-referenceonly")) {
+      return 1;
     }
     return 0;
   }
