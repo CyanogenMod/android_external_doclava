@@ -285,6 +285,7 @@ public class Doclava {
         documentAnnotationsPath = a[1];
       } else if (a[0].equals("-referenceonly")) {
         referenceOnly = true;
+        mHDFData.add(new String[] {"referenceonly", "1"});
       }
     }
 
