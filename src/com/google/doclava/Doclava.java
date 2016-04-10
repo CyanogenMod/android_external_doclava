@@ -72,12 +72,14 @@ public class Doclava {
   public static boolean USE_UPDATED_TEMPLATES = false;
   /* Show Preview navigation and process preview docs */
   public static boolean INCLUDE_PREVIEW = false;
+  /* output en, es, ja without parent intl/ container */
+  public static boolean USE_DEVSITE_LOCALE_OUTPUT_PATHS = false;
   public static String outputPathBase = "/";
   public static ArrayList<String> inputPathHtmlDirs = new ArrayList<String>();
   public static ArrayList<String> inputPathHtmlDir2 = new ArrayList<String>();
   public static String outputPathHtmlDirs;
   public static String outputPathHtmlDir2;
-  public static final String devsiteRoot = "en/";
+
   public static String javadocDir = "reference/";
   public static String htmlExtension;
 
@@ -288,7 +290,7 @@ public class Doclava {
       } else if (a[0].equals("-devsite")) {
         // Don't copy the doclava assets to devsite output (ie use proj assets only)
         includeDefaultAssets = false;
-        outputPathHtmlDirs = outputPathHtmlDirs + "/" + devsiteRoot;
+        USE_DEVSITE_LOCALE_OUTPUT_PATHS = true;
       } else if (a[0].equals("-documentannotations")) {
         documentAnnotations = true;
         documentAnnotationsPath = a[1];
@@ -363,7 +365,11 @@ public class Doclava {
         // HTML Pages
         if (!ClearPage.htmlDirs.isEmpty()) {
           ClearPage.htmlDirs = inputPathHtmlDirs;
-          ClearPage.outputDir = outputPathHtmlDirs;
+          if (USE_DEVSITE_LOCALE_OUTPUT_PATHS) {
+            ClearPage.outputDir = outputPathHtmlDirs + "/en/";
+          } else {
+            ClearPage.outputDir = outputPathHtmlDirs;
+          }
           writeHTMLPages();
         }
       }
@@ -675,9 +681,6 @@ public class Doclava {
     }
     if (option.equals("-yaml")) {
       return 2;
-    }
-    if (option.equals("-devsite")) {
-      return 1;
     }
     if (option.equals("-gmsref")) {
       gmsRef = true;
