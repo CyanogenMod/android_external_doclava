@@ -109,41 +109,6 @@ public class PageMetadata {
   }
 
   /**
-  * Given a list of metadata nodes organized by lang, sort the
-  * root nodes by type name and render the types and their child
-  * metadata nodes to separate lang-specific json files in the out dir.
-  *
-  * @param rootNodesList A list of root metadata nodes, each
-  *        representing a type and it's member child pages.
-  */
-  public static void WriteListByLang(List<Node> rootNodesList) {
-    Collections.sort(rootNodesList, BY_LANG_NAME);
-    for (Node n : rootNodesList) {
-      String langFilename = "";
-      String langname = n.getLang();
-      langFilename = "_" + langname;
-      Collections.sort(n.getChildren(), BY_TYPE_NAME);
-      Node pageMeta = new Node.Builder().setLabel("TOP").setChildren(n.getChildren()).build();
-
-      StringBuilder buf = new StringBuilder();
-      // write the taglist to string format
-      pageMeta.renderLangResources(buf,langname);
-      //pageMeta.renderTypesByTag(buf);
-      // write the taglist to js file
-      Data data = Doclava.makeHDF();
-      data.setValue("reference_tree", buf.toString());
-      data.setValue("metadata.lang", langname);
-      // remove when updated templates are launched
-      String unifiedFilename = "jd_lists_unified" + langFilename + ".js";
-      String extrasFilename = "jd_extras" + langFilename + ".js";
-      // write out jd_lists_unified for each lang
-      ClearPage.write(data, "jd_lists_unified.cs", unifiedFilename);
-      // append jd_extras to jd_lists_unified for each lang, then delete.
-      appendExtrasMetadata(extrasFilename, unifiedFilename);
-    }
-  }
-
-  /**
   * Extract supported metadata values from a page and add them as
   * a child node of a root node based on type. Some metadata values
   * are normalized. Unsupported metadata fields are ignored. See
@@ -172,21 +137,16 @@ public class PageMetadata {
     if (!excludeNode) {
       Node pageMeta = new Node.Builder().build();
       pageMeta.setLabel(getTitleNormalized(hdf, "page.title"));
-      pageMeta.setCategory(hdf.getValue("page.category",""));
+      pageMeta.setTitleFriendly(hdf.getValue("page.titleFriendly",""));
       pageMeta.setSummary(hdf.getValue("page.metaDescription",""));
       pageMeta.setLink(getPageUrlNormalized(filename));
       pageMeta.setGroup(getStringValueNormalized(hdf,"sample.group"));
       pageMeta.setKeywords(getPageTagsNormalized(hdf, "page.tags"));
       pageMeta.setTags(getPageTagsNormalized(hdf, "meta.tags"));
       pageMeta.setImage(getImageUrlNormalized(hdf.getValue("page.image", "")));
-      pageMeta.setLang(getLangStringNormalized(hdf, filename));
+      pageMeta.setLang(getLangStringNormalized(filename));
       pageMeta.setType(getStringValueNormalized(hdf, "page.type"));
-      pageMeta.setTimestamp(hdf.getValue("page.timestamp",""));
-      if (Doclava.USE_UPDATED_TEMPLATES) {
-        appendMetaNodeByLang(pageMeta, tagList);
-      } else {
-        appendMetaNodeByType(pageMeta, tagList);
-      }
+      appendMetaNodeByType(pageMeta, tagList);
     }
   }
 
@@ -363,9 +323,7 @@ public class PageMetadata {
     StringBuilder outString =  new StringBuilder();
     String tagList = hdf.getValue(tag, "");
     tagList.replaceAll("\"", "");
-    if ("".equals(tagList)) {
-      return tagList;
-    } else {
+    if (!tagList.isEmpty()) {
       int end = tagList.indexOf(",");
       if (end != -1) {
         tagList = tagList.substring(0,end);
@@ -375,8 +333,8 @@ public class PageMetadata {
         tagList = tagList.toLowerCase();
       }
       outString.append(tagList.trim());
-      return outString.toString();
-    } 
+    }
+    return outString.toString();
   }
 
   /**
@@ -412,24 +370,19 @@ public class PageMetadata {
   * @param filename A path string to the file relative to root.
   * @return A normalized lang value.
   */
-  public static String getLangStringNormalized(Data data, String filename) {
-    String[] stripStr = filename.toLowerCase().split("\\/", 3);
+  public static String getLangStringNormalized(String filename) {
+    String[] stripStr = filename.toLowerCase().split("\\/");
     String outFrag = "en";
-    String pathCanonical = filename;
     if (stripStr.length > 0) {
       for (String t : DocFile.DEVSITE_VALID_LANGS) {
         if ("intl".equals(stripStr[0])) {
           if (t.equals(stripStr[1])) {
             outFrag = stripStr[1];
-            //extract the root url (exclusive of intl/nn)
-            pathCanonical = stripStr[2];
             break;
           }
         }
       }
     }
-    //extract the root url (exclusive of intl/nn)
-    data.setValue("path.canonical", pathCanonical);
     return outFrag;
   }
 
@@ -535,37 +488,6 @@ public class PageMetadata {
   * @param rootList The current list of root nodes.
   * @return The updated list of root nodes.
   */
-  public static List<Node> appendMetaNodeByLang(Node gNode, List<Node> rootList) {
-
-    String nodeLang = gNode.getLang();
-    boolean matched = false;
-    for (Node n : rootList) {
-      if (n.getLang().equals(nodeLang)) {  //find any matching lang node
-        appendMetaNodeByType(gNode,n.getChildren());
-        //n.getChildren().add(gNode);
-        matched = true;
-        break; // add to the first root node only
-      } // tag did not match
-    } // end rootnodes matching iterator
-    if (!matched) {
-      List<Node> mlangList = new ArrayList<Node>(); // list of file objects that have a given lang
-      //mlangList.add(gNode);
-      Node tnode = new Node.Builder().setChildren(mlangList).setLang(nodeLang).build();
-      rootList.add(tnode);
-      appendMetaNodeByType(gNode, mlangList);
-    }
-    return rootList;
-  }
-
-  /**
-  * Given a metadata node, add it as a child of a root node based on its
-  * type. If there is no root node that matches the node's type, create one
-  * and add the metadata node as a child node.
-  *
-  * @param gNode The node to attach to a root node or add as a new root node.
-  * @param rootList The current list of root nodes.
-  * @return The updated list of root nodes.
-  */
   public static List<Node> appendMetaNodeByType(Node gNode, List<Node> rootList) {
 
     String nodeTags = gNode.getType();
@@ -621,28 +543,6 @@ public class PageMetadata {
     return rootTagNodesList;
   }
 
-  /**
-  * Append the contents of jd_extras to jd_lists_unified for each language.
-  *
-  * @param extrasFilename The lang-specific extras file to append.
-  * @param unifiedFilename The lang-specific unified metadata file.
-  */
-  public static void appendExtrasMetadata (String extrasFilename, String unifiedFilename) {
-    File f = new File(ClearPage.outputDir + "/" + extrasFilename);
-    if (f.exists() && !f.isDirectory()) {
-      ClearPage.copyFile(true, f, unifiedFilename, true);
-      try {
-        if (f.delete()) {
-          if (Doclava.META_DBG) System.out.println("    >>>>> Delete succeeded");
-        } else {
-          if (Doclava.META_DBG) System.out.println("    >>>>> Delete failed");
-        }
-      } catch (Exception e) {
-        if (Doclava.META_DBG) System.out.println("    >>>>> Exception: " + e + "\n");
-      }
-    }
-  }
-
   public static final Comparator<Node> BY_TAG_NAME = new Comparator<Node>() {
     public int compare (Node one, Node other) {
       return one.getLabel().compareTo(other.getLabel());
@@ -655,19 +555,13 @@ public class PageMetadata {
     }
   };
 
-    public static final Comparator<Node> BY_LANG_NAME = new Comparator<Node>() {
-    public int compare (Node one, Node other) {
-      return one.getLang().compareTo(other.getLang());
-    }
-  };
-
   /**
   * A node for storing page metadata. Use Builder.build() to instantiate.
   */
   public static class Node {
 
     private String mLabel; // holds page.title or similar identifier
-    private String mCategory; // subtabs, example 'training' 'guides'
+    private String mTitleFriendly; // title for card or similar use
     private String mSummary; // Summary for card or similar use
     private String mLink; //link href for item click
     private String mGroup; // from sample.group in _index.jd
@@ -676,12 +570,11 @@ public class PageMetadata {
     private String mImage; // holds an href, fully qualified or relative to root
     private List<Node> mChildren;
     private String mLang;
-    private String mType; // design, develop, distribute, youtube, blog, etc
-    private String mTimestamp; // optional timestamp eg 1447452827
+    private String mType; // can be file, dir, video show, announcement, etc.
 
     private Node(Builder builder) {
       mLabel = builder.mLabel;
-      mCategory = builder.mCategory;
+      mTitleFriendly = builder.mTitleFriendly;
       mSummary = builder.mSummary;
       mLink = builder.mLink;
       mGroup = builder.mGroup;
@@ -691,17 +584,16 @@ public class PageMetadata {
       mChildren = builder.mChildren;
       mLang = builder.mLang;
       mType = builder.mType;
-      mTimestamp = builder.mTimestamp;
     }
 
     private static class Builder {
-      private String mLabel, mCategory, mSummary, mLink, mGroup, mImage, mLang, mType, mTimestamp;
+      private String mLabel, mTitleFriendly, mSummary, mLink, mGroup, mImage, mLang, mType;
       private List<String> mKeywords = null;
       private List<String> mTags = null;
       private List<Node> mChildren = null;
       public Builder setLabel(String mLabel) { this.mLabel = mLabel; return this;}
-      public Builder setCategory(String mCategory) {
-        this.mCategory = mCategory; return this;
+      public Builder setTitleFriendly(String mTitleFriendly) {
+        this.mTitleFriendly = mTitleFriendly; return this;
       }
       public Builder setSummary(String mSummary) {this.mSummary = mSummary; return this;}
       public Builder setLink(String mLink) {this.mLink = mLink; return this;}
@@ -714,7 +606,6 @@ public class PageMetadata {
       public Builder setChildren(List<Node> mChildren) {this.mChildren = mChildren; return this;}
       public Builder setLang(String mLang) {this.mLang = mLang; return this;}
       public Builder setType(String mType) {this.mType = mType; return this;}
-      public Builder setTimestamp(String mTimestamp) {this.mTimestamp = mTimestamp; return this;}
       public Node build() {return new Node(this);}
     }
 
@@ -735,24 +626,6 @@ public class PageMetadata {
         }
       }
     }
-
-    /**
-    * Render a tree of metadata nodes organized by lang.
-    * @param buf Output buffer to render to.
-    */
-    void renderLangResources(StringBuilder buf, String langname) {
-      List<Node> list = mChildren; //list of type rootnodes
-      if (list == null || list.size() == 0) {
-        buf.append("null");
-      } else {
-        final int n = list.size();
-        for (int i = 0; i < n; i++) {
-          buf.append("METADATA['" + langname + "']." + list.get(i).mType + " = [");
-          list.get(i).renderTypes(buf); //render this lang's children
-          buf.append("\n];\n\n");
-        }
-      }
-    }
     /**
     * Render all metadata nodes for a specific type.
     * @param buf Output buffer to render to.
@@ -765,33 +638,16 @@ public class PageMetadata {
         final int n = list.size();
         for (int i = 0; i < n; i++) {
           buf.append("\n      {\n");
-          buf.append("        \"title\":\"");
-          renderStrWithUcs(buf, list.get(i).mLabel);
-          buf.append("\",\n" );
-          buf.append("        \"summary\":\"");
-          renderStrWithUcs(buf, list.get(i).mSummary);
-          buf.append("\",\n" );
+          buf.append("        \"title\":\"" + list.get(i).mLabel + "\",\n" );
+          buf.append("        \"titleFriendly\":\"" + list.get(i).mTitleFriendly + "\",\n" );
+          buf.append("        \"summary\":\"" + list.get(i).mSummary + "\",\n" );
           buf.append("        \"url\":\"" + list.get(i).mLink + "\",\n" );
-          if (!"".equals(list.get(i).mImage)) {
-            buf.append("        \"image\":\"" + list.get(i).mImage + "\",\n" );
-          }
-          if (!"".equals(list.get(i).mGroup)) {
-            buf.append("        \"group\":\"");
-            renderStrWithUcs(buf, list.get(i).mGroup);
-            buf.append("\",\n" );
-          }
-          if (!"".equals(list.get(i).mCategory)) {
-            buf.append("        \"category\":\"" + list.get(i).mCategory + "\",\n" );
-          }
-          if ((list.get(i).mType != null) && (list.get(i).mType != "")) {
-            buf.append("        \"type\":\"" + list.get(i).mType + "\",\n");
-          }
+          buf.append("        \"group\":\"" + list.get(i).mGroup + "\",\n" );
           list.get(i).renderArrayType(buf, list.get(i).mKeywords, "keywords");
           list.get(i).renderArrayType(buf, list.get(i).mTags, "tags");
-          if (!"".equals(list.get(i).mTimestamp)) {
-            buf.append("        \"timestamp\":\"" + list.get(i).mTimestamp + "\",\n");
-          }
-          buf.append("        \"lang\":\"" + list.get(i).mLang + "\"" );
+          buf.append("        \"image\":\"" + list.get(i).mImage + "\",\n" );
+          buf.append("        \"lang\":\"" + list.get(i).mLang + "\",\n" );
+          buf.append("        \"type\":\"" + list.get(i).mType + "\"");
           buf.append("\n      }");
           if (i != n - 1) {
             buf.append(", ");
@@ -866,35 +722,25 @@ public class PageMetadata {
         final int n = list.size();
         for (int i = 0; i < n; i++) {
           String tagval = list.get(i).toString();
-          renderStrWithUcs(buf,tagval);
+          final int L = tagval.length();
+          for (int t = 0; t < L; t++) {
+            char c = tagval.charAt(t);
+            if (c >= Character.MIN_HIGH_SURROGATE && c <= Character.MAX_HIGH_SURROGATE ) {
+              // we have a UTF-16 multi-byte character
+              int codePoint = tagval.codePointAt(t);
+              int charSize = Character.charCount(codePoint);
+              t += charSize - 1;
+              buf.append(String.format("\\u%04x",codePoint));
+            } else if (c >= ' ' && c <= '~' && c != '\\') {
+              buf.append(c);
+            } else { 
+              // we are encoding a two byte character
+              buf.append(String.format("\\u%04x", (int) c));
+            }
+          }
           if (i != n - 1) {
             buf.append(",");
           }
-        }
-      }
-    }
-
-    /**
-    * Render a string that can include ucs2 encoded characters.
-    * @param buf Output buffer to render to.
-    * @param chars String to append to buf with any necessary encoding
-    */
-    void renderStrWithUcs(StringBuilder buf, String chars) {
-      String strval = chars;
-      final int L = strval.length();
-      for (int t = 0; t < L; t++) {
-        char c = strval.charAt(t);
-        if (c >= Character.MIN_HIGH_SURROGATE && c <= Character.MAX_HIGH_SURROGATE ) {
-          // we have a UTF-16 multi-byte character
-          int codePoint = strval.codePointAt(t);
-          int charSize = Character.charCount(codePoint);
-          t += charSize - 1;
-          buf.append(String.format("\\u%04x",codePoint));
-        } else if (c >= ' ' && c <= '~' && c != '\\') {
-          buf.append(c);
-        } else { 
-          // we are encoding a two byte character
-          buf.append(String.format("\\u%04x", (int) c));
         }
       }
     }
@@ -907,12 +753,12 @@ public class PageMetadata {
        mLabel = label;
     }
 
-    public String getCategory() {
-      return mCategory;
+    public String getTitleFriendly() {
+      return mTitleFriendly;
     }
 
-    public void setCategory(String title) {
-       mCategory = title;
+    public void setTitleFriendly(String title) {
+       mTitleFriendly = title;
     }
 
     public String getSummary() {
@@ -1003,16 +849,8 @@ public class PageMetadata {
       return mType;
     }
 
-    public String getTimestamp() {
-      return mTimestamp;
-    }
-
     public void setType(String type) {
       mType = type;
-    }
-
-    public void setTimestamp(String timestamp) {
-      mTimestamp = timestamp;
     }
   }
 }

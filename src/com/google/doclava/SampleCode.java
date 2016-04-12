@@ -206,7 +206,7 @@ public class SampleCode {
         if (inList(path, IMAGES)) {
           type = "img";
           if (f.length() < MAX_FILE_SIZE_BYTES) {
-            ClearPage.copyFile(false, f, path, false);
+            ClearPage.copyFile(false, f, path);
             writeImageVideoPage(f, convertExtension(path, Doclava.htmlExtension),
                 relative, type, true);
           } else {
@@ -220,7 +220,7 @@ public class SampleCode {
         } else if (inList(path, VIDEOS)) {
           type = "video";
           if (f.length() < MAX_FILE_SIZE_BYTES) {
-            ClearPage.copyFile(false, f, path, false);
+            ClearPage.copyFile(false, f, path);
             writeImageVideoPage(f, convertExtension(path, Doclava.htmlExtension),
                 relative, type, true);
           } else {

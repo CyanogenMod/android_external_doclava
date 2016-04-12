@@ -107,9 +107,7 @@ public class ClearPage {
       }
     }
     data.setValue("toroot", toroot);
-    if (Doclava.USE_UPDATED_TEMPLATES) {
-      data.setValue("useUpdatedTemplates", "true");
-    }
+
     data.setValue("filename", filename);
 
     if (!fullPath) {
@@ -159,7 +157,7 @@ public class ClearPage {
     }
   }
 
-  public static void copyFile(boolean allowExcepted, File from, String toPath, Boolean append) {
+  public static void copyFile(boolean allowExcepted, File from, String toPath) {
     File to = new File(outputDir + "/" + toPath);
     FileInputStream in;
     FileOutputStream out;
@@ -174,9 +172,9 @@ public class ClearPage {
     }
     ensureDirectory(to);
     try {
-      out = new FileOutputStream(to, append);
+      out = new FileOutputStream(to);
     } catch (IOException e) {
-      System.err.println(to.getAbsolutePath() + ": Error opening file");
+      System.err.println(from.getAbsolutePath() + ": Error opening file");
       return;
     }
     if (!isValidContentType(allowExcepted, toPath, DROIDDOC_VALID_CONTENT_TYPES)) {
