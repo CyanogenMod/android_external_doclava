@@ -456,7 +456,7 @@ public class MethodInfo extends MemberInfo implements AbstractMethodInfo, Resolv
 
       // Complain about misnamed @param tags
       for (ParamTagInfo tag : paramTags) {
-        if (!isParamTagInMethod(tag)){
+        if (!isParamTagInMethod(tag) && !tag.isTypeParameter()){
           Errors.error(Errors.UNKNOWN_PARAM_TAG_NAME, tag.position(),
               "@param tag with name that doesn't match the parameter list: '"
               + tag.parameterName() + "'");
@@ -481,12 +481,7 @@ public class MethodInfo extends MemberInfo implements AbstractMethodInfo, Resolv
         if (index >= 0) {
           comment = paramTags[index].parameterComment();
           position = paramTags[index].position();
-        } else if (!tag.isTypeParameter()) {
-          // Complain about misnamed @param tags. Note that we must exclude type
-          // parameter tags (such as "@param <T> foo") from this analysis.
-          Errors.error(Errors.UNKNOWN_PARAM_TAG_NAME, tag.position(),
-              "@param tag with name that doesn't match the parameter list: '" + tag.parameterName()
-                  + "'");
+        }
 
         // get our parent's tags to fill in the blanks
         MethodInfo overridden = this.findOverriddenMethod(name(), signature());
