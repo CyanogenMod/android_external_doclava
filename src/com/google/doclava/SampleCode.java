@@ -444,11 +444,17 @@ public class SampleCode {
     }
 
     StringBuilder buf = new StringBuilder();
-    node.renderGroupNodesTOC(buf);
-    if (Doclava.samplesNavTree != null) {
-          Doclava.samplesNavTree.setValue("samples_toc_tree", buf.toString());
+    if (Doclava.USE_DEVSITE_LOCALE_OUTPUT_PATHS) {
+      node.renderGroupNodesTOCYaml(buf, "");
+    } else {
+      node.renderGroupNodesTOC(buf);
     }
-
+    if (Doclava.samplesNavTree != null) {
+      Doclava.samplesNavTree.setValue("samples_toc_tree", buf.toString());
+      if (Doclava.USE_DEVSITE_LOCALE_OUTPUT_PATHS) {
+        ClearPage.write(Doclava.samplesNavTree, "samples_navtree_data.cs", "en/samples/_book.yaml");
+      }
+    }
   }
 
   /**
@@ -604,9 +610,33 @@ public class SampleCode {
     }
 
     /**
+    * Renders browsable sample groups and projects to a _book.yaml file, starting
+    * from the group nodes and then rendering their project nodes and finally their
+    * child dirs and files.
+    */
+    void renderGroupNodesTOCYaml(StringBuilder buf, String indent) {
+      List<Node> list = mChildren;
+      if (list == null || list.size() == 0) {
+        return;
+      } else {
+        final int n = list.size();
+        if (indent.length() > 0) {
+          buf.append(indent + "section:\n");
+        } // else append 'toc:\n' if needed
+        for (int i = 0; i < n; i++) {
+          buf.append(indent + "- title: " + list.get(i).getLabel() + "\n");
+          buf.append(indent + "  path: " + list.get(i).getLink() + "\n");
+          if (list.get(i).getChildren() != null) {
+            list.get(i).renderGroupNodesTOCYaml(buf, indent + "  ");
+          }
+        }
+      }
+    }
+
+    /**
     * Renders browsable sample groups and projects to an html list, starting
     * from the group nodes and then rendering their project nodes and finally their
-    * child dirs and files. 
+    * child dirs and files.
     */
     void renderGroupNodesTOC(StringBuilder buf) {
       List<Node> list = mChildren;
