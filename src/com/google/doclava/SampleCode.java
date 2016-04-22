@@ -185,7 +185,7 @@ public class SampleCode {
     int i = 0;
     String expansion = ".Sub.";
     String key = newkey;
-
+    String prefixRoot = Doclava.USE_DEVSITE_LOCALE_OUTPUT_PATHS ? "en/" : "";
     if (recursed) {
       key = (key + expansion);
     } else {
@@ -200,17 +200,22 @@ public class SampleCode {
         continue;
       }
       if (f.isFile() && name.contains(".")) {
-        String path = relative + name;
+        String baseRelative = relative;
+        if (Doclava.USE_DEVSITE_LOCALE_OUTPUT_PATHS) {
+          // don't nest root path
+          baseRelative = baseRelative.replaceFirst("^en/", "");
+        }
+        String path = baseRelative + name;
         type = mapTypes(name);
         link = convertExtension(path, Doclava.htmlExtension);
         if (inList(path, IMAGES)) {
           type = "img";
           if (f.length() < MAX_FILE_SIZE_BYTES) {
-            ClearPage.copyFile(false, f, path, false);
-            writeImageVideoPage(f, convertExtension(path, Doclava.htmlExtension),
+            ClearPage.copyFile(false, f, prefixRoot + path, false);
+            writeImageVideoPage(f, convertExtension(prefixRoot + path, Doclava.htmlExtension),
                 relative, type, true);
           } else {
-            writeImageVideoPage(f, convertExtension(path, Doclava.htmlExtension),
+            writeImageVideoPage(f, convertExtension(prefixRoot + path, Doclava.htmlExtension),
                 relative, type, false);
           }
           hdf.setValue(key + i + ".Type", "img");
@@ -220,11 +225,11 @@ public class SampleCode {
         } else if (inList(path, VIDEOS)) {
           type = "video";
           if (f.length() < MAX_FILE_SIZE_BYTES) {
-            ClearPage.copyFile(false, f, path, false);
-            writeImageVideoPage(f, convertExtension(path, Doclava.htmlExtension),
+            ClearPage.copyFile(false, f, prefixRoot + path, false);
+            writeImageVideoPage(f, convertExtension(prefixRoot + path, Doclava.htmlExtension),
                 relative, type, true);
           } else {
-            writeImageVideoPage(f, convertExtension(path, Doclava.htmlExtension),
+            writeImageVideoPage(f, convertExtension(prefixRoot + path, Doclava.htmlExtension),
                 relative, type, false);
           }
           hdf.setValue(key + i + ".Type", "video");
@@ -232,7 +237,7 @@ public class SampleCode {
           hdf.setValue(key + i + ".Href", link);
           hdf.setValue(key + i + ".RelPath", relative);
         } else if (inList(path, TEMPLATED)) {
-          writePage(f, convertExtension(path, Doclava.htmlExtension), relative, hdf);
+          writePage(f, convertExtension(prefixRoot + path, Doclava.htmlExtension), relative, hdf);
           hdf.setValue(key + i + ".Type", type);
           hdf.setValue(key + i + ".Name", name);
           hdf.setValue(key + i + ".Href", link);
@@ -258,7 +263,7 @@ public class SampleCode {
     setParentDirs(hdf, relative, name, false);
     //Generate an index.html page for each dir being processed
     if (FULL_TREE_NAVIGATION) {
-      ClearPage.write(hdf, "sampleindex.cs", relative + "/index" + Doclava.htmlExtension);
+      ClearPage.write(hdf, "sampleindex.cs", prefixRoot + relative + "/index" + Doclava.htmlExtension);
     }
   }
 
@@ -282,6 +287,7 @@ public class SampleCode {
     String mGroup = "";
     File f = new File(filename);
     String rel = dir.getPath();
+    String prefixRoot = Doclava.USE_DEVSITE_LOCALE_OUTPUT_PATHS ? "en/" : "";
     if (writeFiles) {
 
       hdf.setValue("samples", "true");
@@ -293,9 +299,9 @@ public class SampleCode {
       hdf.setValue("samplesProjectIndex", "true");
       if (!f.isFile()) {
         //The directory didn't have an _index.jd, so create a stub.
-        ClearPage.write(hdf, "sampleindex.cs", mDest + "index" + Doclava.htmlExtension);
+        ClearPage.write(hdf, "sampleindex.cs", prefixRoot + mDest + "index" + Doclava.htmlExtension);
       } else {
-        DocFile.writePage(filename, rel, mDest + "index" + Doclava.htmlExtension, hdf);
+        DocFile.writePage(filename, rel, prefixRoot + mDest + "index" + Doclava.htmlExtension, hdf);
       }
     } else if (f.isFile()) {
       //gather metadata for toc and jd_lists_unified
@@ -320,11 +326,12 @@ public class SampleCode {
   * @param hdf The data to read/write for files in this project.
   */
   public void writeProjectStructure(String dir, Data hdf) {
+    String prefixRoot = Doclava.USE_DEVSITE_LOCALE_OUTPUT_PATHS ? "en/" : "";
     hdf.setValue("projectStructure", "true");
     hdf.setValue("projectDir", mProjectDir);
     hdf.setValue("page.title", mProjectDir + " Structure");
     hdf.setValue("projectTitle", mTitle);
-    ClearPage.write(hdf, "sampleindex.cs", mDest + "project" + Doclava.htmlExtension);
+    ClearPage.write(hdf, "sampleindex.cs", prefixRoot + mDest + "project" + Doclava.htmlExtension);
     hdf.setValue("projectStructure", "");
   }
 
@@ -401,7 +408,6 @@ public class SampleCode {
     hdf.setValue("subdir", subdir);
     hdf.setValue("resType", resourceType);
     hdf.setValue("realFile", name);
-
     ClearPage.write(hdf, "sample.cs", out);
   }
 
