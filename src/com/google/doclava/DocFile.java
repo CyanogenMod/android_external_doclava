@@ -180,6 +180,11 @@ public class DocFile {
       ClearPage.write(hdf, "docpage.cs", outfile);
     } else {
       String filename = outfile;
+      // Special case handling of samples files for devsite
+      // locale handling -- strip out the en/ root
+      if (Doclava.USE_DEVSITE_LOCALE_OUTPUT_PATHS) {
+        filename = filename.replaceFirst("^en/", "");
+      }
       // Strip out the intl and lang id substr and get back just the
       // guide, design, distribute, etc.
       filename = getPathRoot(filename);
@@ -414,6 +419,11 @@ public class DocFile {
       }
       //set metadata for this file in jd_lists_unified
       PageMetadata.setPageMetadata(docfile, relative, outfile, hdf, Doclava.sTaglist);
+
+      //for devsite builds, remove 'intl/' from output paths for localized files
+      if (Doclava.USE_DEVSITE_LOCALE_OUTPUT_PATHS) {
+        outfile = outfile.replaceFirst("^intl/", "");
+      }
 
       if (fromTemplate.equals("sdk")) {
         ClearPage.write(hdf, "sdkpage.cs", outfile);

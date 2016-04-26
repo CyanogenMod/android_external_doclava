@@ -133,7 +133,6 @@ public class PageMetadata {
       Data data = Doclava.makeHDF();
       data.setValue("reference_tree", buf.toString());
       data.setValue("metadata.lang", langname);
-      // remove when updated templates are launched
       String unifiedFilename = "jd_lists_unified" + langFilename + ".js";
       String extrasFilename = "jd_extras" + langFilename + ".js";
       // write out jd_lists_unified for each lang
@@ -519,8 +518,12 @@ public class PageMetadata {
   */
   public static String getPageUrlNormalized(String url) {
     String absUrl = "";
+
     if ((url !=null) && (!url.equals(""))) {
       absUrl = url.replace("{@docRoot}", "");
+      if (Doclava.USE_DEVSITE_LOCALE_OUTPUT_PATHS) {
+        absUrl = absUrl.replaceFirst("^en/", "");
+      }
       absUrl = absUrl.replaceFirst("^/(?!/)", "");
     }
     return absUrl;
@@ -628,6 +631,7 @@ public class PageMetadata {
   * @param unifiedFilename The lang-specific unified metadata file.
   */
   public static void appendExtrasMetadata (String extrasFilename, String unifiedFilename) {
+
     File f = new File(ClearPage.outputDir + "/" + extrasFilename);
     if (f.exists() && !f.isDirectory()) {
       ClearPage.copyFile(true, f, unifiedFilename, true);
