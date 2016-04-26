@@ -219,6 +219,7 @@ public class DocFile {
           hdf.setValue("page.category", "google");
         } else if (filename.indexOf("samples") == 0) {
           hdf.setValue("samples", "true");
+          hdf.setValue("samplesDocPage", "true");
           hdf.setValue("page.type", "develop");
           hdf.setValue("page.category", "samples");
           if (Doclava.samplesNavTree != null) {
@@ -320,6 +321,7 @@ public class DocFile {
             hdf.setValue("samples", "true");
             hdf.setValue("page.type", "ndk");
             hdf.setValue("page.category", "samples");
+            hdf.setValue("samplesDocPage", "true");
           } else if (filename.indexOf("ndk/downloads") == 0) {
             hdf.setValue("downloads", "true");
             hdf.setValue("page.type", "ndk");
@@ -352,6 +354,7 @@ public class DocFile {
           hdf.setValue("page.type", "google");
         } else if (filename.indexOf("samples") == 0) {
           hdf.setValue("samples", "true");
+          hdf.setValue("samplesDocPage", "true");
           hdf.setValue("page.type", "samples");
           if (Doclava.samplesNavTree != null) {
             hdf.setValue("samples_toc_tree", Doclava.samplesNavTree.getValue("samples_toc_tree", ""));
@@ -411,6 +414,7 @@ public class DocFile {
             hdf.setValue("reference", "true");
           } else if (filename.indexOf("ndk/samples") == 0) {
             hdf.setValue("samples", "true");
+            hdf.setValue("samplesDocPage", "true");
           } else if (filename.indexOf("ndk/downloads") == 0) {
             hdf.setValue("downloads", "true");
             fromTemplate = hdf.getValue("page.template", "");
