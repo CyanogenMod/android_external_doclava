@@ -445,7 +445,7 @@ public class SampleCode {
 
     StringBuilder buf = new StringBuilder();
     if (Doclava.USE_DEVSITE_LOCALE_OUTPUT_PATHS) {
-      node.renderGroupNodesTOCYaml(buf, "");
+      node.renderGroupNodesTOCYaml(buf, "", false);
     } else {
       node.renderGroupNodesTOC(buf);
     }
@@ -614,7 +614,7 @@ public class SampleCode {
     * from the group nodes and then rendering their project nodes and finally their
     * child dirs and files.
     */
-    void renderGroupNodesTOCYaml(StringBuilder buf, String indent) {
+    void renderGroupNodesTOCYaml(StringBuilder buf, String indent, Boolean isChild) {
       List<Node> list = mChildren;
       if (list == null || list.size() == 0) {
         return;
@@ -624,10 +624,21 @@ public class SampleCode {
           buf.append(indent + "section:\n");
         } // else append 'toc:\n' if needed
         for (int i = 0; i < n; i++) {
-          buf.append(indent + "- title: " + list.get(i).getLabel() + "\n");
-          buf.append(indent + "  path: " + list.get(i).getLink() + "\n");
+          if (isChild == true && list.get(i).getChildren() != null) {
+            buf.append(indent + "- title: " + list.get(i).getLabel() + "/\n");
+            buf.append(indent + "  path: \"#\"\n");
+            buf.append(indent + "  path_attributes:\n");
+            buf.append(indent + "  - name: onclick\n");
+            buf.append(indent + "    value: return false;\n");
+            buf.append(indent + "  - name: title\n");
+            buf.append(indent + "    value: " + list.get(i).getLabel() + "\n");
+          } else {
+            String xmlToHtmlPath = list.get(i).getLink().replace(".xml", ".html");
+            buf.append(indent + "- title: " + list.get(i).getLabel() + "\n");
+            buf.append(indent + "  path: " + xmlToHtmlPath + "\n");
+          }
           if (list.get(i).getChildren() != null) {
-            list.get(i).renderGroupNodesTOCYaml(buf, indent + "  ");
+            list.get(i).renderGroupNodesTOCYaml(buf, indent + "  ", true);
           }
         }
       }
