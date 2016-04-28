@@ -225,6 +225,15 @@ public class DocFile {
           if (Doclava.samplesNavTree != null) {
             hdf.setValue("samples_toc_tree", Doclava.samplesNavTree.getValue("samples_toc_tree", ""));
           }
+        } else if (filename.indexOf("go/") == 0) {
+          hdf.setValue("go", "true");
+          hdf.setValue("page.type", "develop");
+          hdf.setValue("page.category", "tools");
+          if (filename.indexOf("go/libraries") == 0) {
+            hdf.setValue("page.category", "libraries");
+            hdf.setValue("page.type", "develop");
+            hdf.setValue("libraries", "true");
+          }
         } else if (filename.indexOf("distribute") == 0) {
           hdf.setValue("distribute", "true");
           hdf.setValue("page.type", "distribute");
@@ -328,7 +337,7 @@ public class DocFile {
             hdf.setValue("page.category", "downloads");
             fromTemplate = hdf.getValue("page.template", "");
           }
-        } 
+        }
       } else {
         //support the old mappings
         if (filename.indexOf("design") == 0) {
