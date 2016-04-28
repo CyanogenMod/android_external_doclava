@@ -328,11 +328,7 @@ public class DocFile {
             hdf.setValue("page.category", "downloads");
             fromTemplate = hdf.getValue("page.template", "");
           }
-        } else {
-          hdf.setValue("about", "true");
-          hdf.setValue("page.type", "about");
-          hdf.setValue("page.category", "about");
-        }
+        } 
       } else {
         //support the old mappings
         if (filename.indexOf("design") == 0) {
