@@ -308,6 +308,10 @@ public class DocFile {
           hdf.setValue("about", "true");
           hdf.setValue("page.type", "about");
           hdf.setValue("page.category", "wear");
+        } else if (filename.indexOf("work") == 0) {
+          hdf.setValue("work", "true");
+          hdf.setValue("page.type", "about");
+          hdf.setValue("page.category", "work");
         } else if (filename.indexOf("preview") == 0) {
           hdf.setValue("page.type", "develop");
           hdf.setValue("page.category", "preview");
@@ -426,6 +430,10 @@ public class DocFile {
           hdf.setValue("page.category", "wear preview");
         } else if (filename.indexOf("wear") == 0) {
           hdf.setValue("wear", "true");
+        } else if (filename.indexOf("work") == 0) {
+          hdf.setValue("work", "true");
+          hdf.setValue("page.type", "about");
+          hdf.setValue("page.category", "work");
         } else if (filename.indexOf("preview") == 0) {
           hdf.setValue("page.type", "preview");
           hdf.setValue("page.category", "preview");
