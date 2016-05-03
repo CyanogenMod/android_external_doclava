@@ -96,6 +96,7 @@ public class NavTree {
         data.setValue("docs.pages." + i + ".id", "" + i);
         data.setValue("docs.pages." + i + ".label", pkg.name());
         data.setValue("docs.pages." + i + ".shortname", "API");
+        data.setValue("docs.pages." + i + ".apilevel", pkg.getSince());
         data.setValue("docs.pages." + i + ".link", pkg.htmlPage());
         data.setValue("docs.pages." + i + ".type", "package");
       } else if (o instanceof ClassInfo) {
