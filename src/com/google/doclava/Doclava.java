@@ -107,8 +107,13 @@ public class Doclava {
 
   public static JSilver jSilver = null;
 
+  //API reference extensions
   private static boolean gmsRef = false;
   private static boolean gcmRef = false;
+  public static boolean testSupportRef = false;
+  public static String testSupportPath = "android/support/test/";
+  public static boolean wearableSupportRef = false;
+  public static String wearableSupportPath = "android/support/wearable/";
   private static boolean samplesRef = false;
   private static boolean sac = false;
 
@@ -291,6 +296,7 @@ public class Doclava {
         // Don't copy the doclava assets to devsite output (ie use proj assets only)
         includeDefaultAssets = false;
         USE_DEVSITE_LOCALE_OUTPUT_PATHS = true;
+        mHDFData.add(new String[] {"devsite", "true"});
       } else if (a[0].equals("-documentannotations")) {
         documentAnnotations = true;
         documentAnnotationsPath = a[1];
@@ -383,7 +389,9 @@ public class Doclava {
       } else if(gcmRef){
         refPrefix = "gcm-";
       }
-      NavTree.writeNavTree(javadocDir, refPrefix);
+      if (!USE_DEVSITE_LOCALE_OUTPUT_PATHS) {
+        NavTree.writeNavTree(javadocDir, refPrefix);
+      }
 
       // Write yaml tree.
       if (yamlNavFile != null){
@@ -690,6 +698,14 @@ public class Doclava {
       gcmRef = true;
       return 1;
     }
+    if (option.equals("-testSupportRef")) {
+      testSupportRef = true;
+      return 1;
+    }
+    if (option.equals("-wearableSupportRef")) {
+      wearableSupportRef = true;
+      return 1;
+    }
     if (option.equals("-metadataDebug")) {
       return 1;
     }
@@ -803,6 +819,10 @@ public class Doclava {
           data.setValue("reference.gms", "true");
       } else if(gcmRef){
           data.setValue("reference.gcm", "true");
+      } else if(testSupportRef){
+          data.setValue("reference.testSupport", "true");
+      } else if(wearableSupportRef){
+          data.setValue("reference.wearableSupport", "true");
       }
       data.setValue("reference", "1");
       data.setValue("reference.apilevels", sinceTagger.hasVersions() ? "1" : "0");
@@ -916,6 +936,14 @@ public class Doclava {
     }
 
     int i = 0;
+    String listDir = javadocDir;
+    if (USE_DEVSITE_LOCALE_OUTPUT_PATHS) {
+      if (testSupportRef) {
+        listDir = listDir + testSupportPath;
+      } else if (wearableSupportRef) {
+        listDir = listDir + wearableSupportPath;
+      }
+    }
     for (String s : sorted.keySet()) {
       data.setValue("docs.pages." + i + ".id", "" + i);
       data.setValue("docs.pages." + i + ".label", s);
@@ -934,11 +962,12 @@ public class Doclava {
       }
       i++;
     }
-    ClearPage.write(data, "lists.cs", javadocDir + "lists.js");
+    ClearPage.write(data, "lists.cs", listDir + "lists.js");
 
 
     // Write the lists for JD documents (if there are HTML directories to process)
-    if (inputPathHtmlDirs.size() > 0) {
+    // Skip this for devsite builds
+    if ((inputPathHtmlDirs.size() > 0) && (!USE_DEVSITE_LOCALE_OUTPUT_PATHS)) {
       Data jddata = makeHDF();
       Iterator counter = new Iterator();
       for (String htmlDir : inputPathHtmlDirs) {
