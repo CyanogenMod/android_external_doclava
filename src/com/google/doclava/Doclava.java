@@ -294,6 +294,7 @@ public class Doclava {
         // Don't copy the doclava assets to devsite output (ie use proj assets only)
         includeDefaultAssets = false;
         USE_DEVSITE_LOCALE_OUTPUT_PATHS = true;
+        mHDFData.add(new String[] {"devsite", "true"});
       } else if (a[0].equals("-documentannotations")) {
         documentAnnotations = true;
         documentAnnotationsPath = a[1];
