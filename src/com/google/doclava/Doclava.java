@@ -389,9 +389,7 @@ public class Doclava {
       } else if(gcmRef){
         refPrefix = "gcm-";
       }
-      if (!USE_DEVSITE_LOCALE_OUTPUT_PATHS) {
-        NavTree.writeNavTree(javadocDir, refPrefix);
-      }
+      NavTree.writeNavTree(javadocDir, refPrefix);
 
       // Write yaml tree.
       if (yamlNavFile != null){
@@ -940,8 +938,10 @@ public class Doclava {
     if (USE_DEVSITE_LOCALE_OUTPUT_PATHS) {
       if (testSupportRef) {
         listDir = listDir + testSupportPath;
+        data.setValue("reference.testSupport", "true");
       } else if (wearableSupportRef) {
         listDir = listDir + wearableSupportPath;
+        data.setValue("reference.wearableSupport", "true");
       }
     }
     for (String s : sorted.keySet()) {
