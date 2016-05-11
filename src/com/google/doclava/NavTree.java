@@ -49,6 +49,14 @@ public class NavTree {
       ClearPage.write(data, "gms_navtree_data.cs", "gms_navtree_data.js");
     } else if (refPrefix == "gcm-"){
       ClearPage.write(data, "gcm_navtree_data.cs", "gcm_navtree_data.js");
+    } else if ((Doclava.USE_DEVSITE_LOCALE_OUTPUT_PATHS)
+          && (Doclava.testSupportRef)){
+        ClearPage.write(data, "navtree_data.cs", dir + Doclava.testSupportPath
+          + "navtree_data.js");
+    } else if ((Doclava.USE_DEVSITE_LOCALE_OUTPUT_PATHS)
+          && (Doclava.wearableSupportRef)){
+        ClearPage.write(data, "navtree_data.cs", dir + Doclava.wearableSupportPath
+          + "navtree_data.js");
     } else {
       ClearPage.write(data, "navtree_data.cs", "navtree_data.js");
     }
