@@ -80,6 +80,11 @@ public class NavTree {
     }
 
     data = makeYamlHDF(sorted, "docs.pages", data);
+    if ((Doclava.USE_DEVSITE_LOCALE_OUTPUT_PATHS) && (Doclava.testSupportRef)) {
+      dir = Doclava.ensureSlash(dir) + Doclava.testSupportPath;
+    } else if ((Doclava.USE_DEVSITE_LOCALE_OUTPUT_PATHS) && (Doclava.wearableSupportRef)) {
+      dir = Doclava.ensureSlash(dir) + Doclava.wearableSupportPath;
+    }
     ClearPage.write(data, "yaml_navtree.cs", Doclava.ensureSlash(dir) + fileName);
   }
 
