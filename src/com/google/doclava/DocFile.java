@@ -271,6 +271,7 @@ public class DocFile {
           if ((filename.indexOf("about/versions") == 0)) {
             hdf.setValue("versions", "true");
             hdf.setValue("page.category", "versions");
+          //todo remove this because there's no file at this location
           } else if ((filename.indexOf("wear") == 0)) {
             hdf.setValue("wear", "true");
             hdf.setValue("page.category", "wear");
@@ -295,6 +296,10 @@ public class DocFile {
           hdf.setValue("accessories", "true");
         } else if (filename.indexOf("compatibility") == 0) {
           hdf.setValue("compatibility", "true");
+        } else if (filename.indexOf("wear/preview") == 0) {
+          hdf.setValue("wearpreview", "true");
+          hdf.setValue("page.type", "develop");
+          hdf.setValue("page.category", "wear preview");
         } else if (filename.indexOf("wear") == 0) {
           hdf.setValue("wear", "true");
           hdf.setValue("about", "true");
@@ -400,6 +405,10 @@ public class DocFile {
           hdf.setValue("accessories", "true");
         } else if (filename.indexOf("compatibility") == 0) {
           hdf.setValue("compatibility", "true");
+        } else if (filename.indexOf("wear/preview") == 0) {
+          hdf.setValue("wearpreview", "true");
+          hdf.setValue("page.type", "develop");
+          hdf.setValue("page.category", "wear preview");
         } else if (filename.indexOf("wear") == 0) {
           hdf.setValue("wear", "true");
         } else if (filename.indexOf("preview") == 0) {
