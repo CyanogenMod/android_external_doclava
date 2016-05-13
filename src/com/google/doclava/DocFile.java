@@ -228,11 +228,14 @@ public class DocFile {
         } else if (filename.indexOf("topic/") == 0) {
           hdf.setValue("topic", "true");
           hdf.setValue("page.type", "develop");
-          hdf.setValue("page.category", "tools");
           if (filename.indexOf("topic/libraries") == 0) {
             hdf.setValue("page.category", "libraries");
             hdf.setValue("page.type", "develop");
             hdf.setValue("libraries", "true");
+          } else if (filename.indexOf("topic/instant-apps") == 0) {
+            hdf.setValue("instantapps", "true");
+            hdf.setValue("page.type", "develop");
+            hdf.setValue("page.category", "instant apps");
           }
         } else if (filename.indexOf("distribute") == 0) {
           hdf.setValue("distribute", "true");
@@ -405,6 +408,18 @@ public class DocFile {
           hdf.setValue("accessories", "true");
         } else if (filename.indexOf("compatibility") == 0) {
           hdf.setValue("compatibility", "true");
+        } else if (filename.indexOf("topic/") == 0) {
+          hdf.setValue("topic", "true");
+          hdf.setValue("page.type", "develop");
+          if (filename.indexOf("topic/libraries") == 0) {
+            hdf.setValue("page.category", "libraries");
+            hdf.setValue("page.type", "develop");
+            hdf.setValue("libraries", "true");
+          } else if (filename.indexOf("topic/instant-apps") == 0) {
+            hdf.setValue("instantapps", "true");
+            hdf.setValue("page.type", "develop");
+            hdf.setValue("page.category", "instant apps");
+          }
         } else if (filename.indexOf("wear/preview") == 0) {
           hdf.setValue("wearpreview", "true");
           hdf.setValue("page.type", "develop");
