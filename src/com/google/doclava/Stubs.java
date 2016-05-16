@@ -336,10 +336,11 @@ public class Stubs {
         // this is not a desired practice but it's happened, so we deal
         // with it by finding the first super class which passes checklevel for purposes of
         // generating the doc & stub information, and proceeding normally.
+        ClassInfo publicSuper = cl.superclass();
         cl.init(cl.asTypeInfo(), cl.realInterfaces(), cl.realInterfaceTypes(), cl.innerClasses(),
             cl.allConstructors(), cl.allSelfMethods(), cl.annotationElements(), cl.allSelfFields(),
             cl.enumConstants(), cl.containingPackage(), cl.containingClass(),
-            supr.superclass(), supr.superclassType(), cl.annotations());
+            publicSuper, publicSuper.asTypeInfo(), cl.annotations());
         Errors.error(Errors.HIDDEN_SUPERCLASS, cl.position(), "Public class " + cl.qualifiedName()
             + " stripped of unavailable superclass " + supr.qualifiedName());
       } else {
