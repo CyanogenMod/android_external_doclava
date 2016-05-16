@@ -285,6 +285,10 @@ public class DocFile {
             hdf.setValue("auto", "true");
             hdf.setValue("page.category", "auto");
           }
+        } else if (filename.indexOf("wear/preview") == 0) {
+          hdf.setValue("wearpreview", "true");
+          hdf.setValue("page.type", "about");
+          hdf.setValue("page.category", "wear preview");
         } else if ((filename.indexOf("tools") == 0) || (filename.indexOf("sdk") == 0)) {
           hdf.setValue("tools", "true");
           hdf.setValue("page.type", "develop");
@@ -299,10 +303,6 @@ public class DocFile {
           hdf.setValue("accessories", "true");
         } else if (filename.indexOf("compatibility") == 0) {
           hdf.setValue("compatibility", "true");
-        } else if (filename.indexOf("wear/preview") == 0) {
-          hdf.setValue("wearpreview", "true");
-          hdf.setValue("page.type", "develop");
-          hdf.setValue("page.category", "wear preview");
         } else if (filename.indexOf("wear") == 0) {
           hdf.setValue("wear", "true");
           hdf.setValue("about", "true");
@@ -422,7 +422,7 @@ public class DocFile {
           }
         } else if (filename.indexOf("wear/preview") == 0) {
           hdf.setValue("wearpreview", "true");
-          hdf.setValue("page.type", "develop");
+          hdf.setValue("page.type", "about");
           hdf.setValue("page.category", "wear preview");
         } else if (filename.indexOf("wear") == 0) {
           hdf.setValue("wear", "true");
