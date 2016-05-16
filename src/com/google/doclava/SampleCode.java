@@ -72,7 +72,7 @@ public class SampleCode {
   *
   * @param offlineMode Ignored -- offline-docs mode is not currently supported for
   *        browsable sample code projects.
-  * @return A root Node for the project containing its metadata and tree structure. 
+  * @return A root Node for the project containing its metadata and tree structure.
   */
   public Node setSamplesTOC(boolean offlineMode) {
     List<Node> filelist = new ArrayList<Node>();
@@ -124,7 +124,7 @@ public class SampleCode {
     boolean writeFiles = true;
     String link = "samples/" + name + "/index" + Doclava.htmlExtension;
     //Write root _index.jd to out and add metadata to Node.
-    writeSampleIndexCs(hdf, f, 
+    writeSampleIndexCs(hdf, f,
         new Node.Builder().setLabel(mProjectDir).setLink(link).build(), true);
   }
 
@@ -135,7 +135,7 @@ public class SampleCode {
   * the root project node.
   *
   * @param parent The root Node that represents this sample code project.
-  * @param dir The current dir being processed. 
+  * @param dir The current dir being processed.
   * @param relative Relative path for creating links to this file.
   */
   public void setProjectStructure(List<Node> parent, File dir, String relative) {
@@ -158,7 +158,7 @@ public class SampleCode {
         String dirpath = relative + name + "/";
         setProjectStructure(mchildren, f, dirpath);
         if (mchildren.size() > 0) {
-          parent.add(new Node.Builder().setLabel(name).setLink(ClearPage.toroot 
+          parent.add(new Node.Builder().setLabel(name).setLink(ClearPage.toroot
             + dirpath).setChildren(mchildren).build());
         }
       }
@@ -626,12 +626,19 @@ public class SampleCode {
         for (int i = 0; i < n; i++) {
           if (isChild == true && list.get(i).getChildren() != null) {
             buf.append(indent + "- title: " + list.get(i).getLabel() + "/\n");
-            buf.append(indent + "  path: \"#\"\n");
-            buf.append(indent + "  path_attributes:\n");
-            buf.append(indent + "  - name: onclick\n");
-            buf.append(indent + "    value: return false;\n");
-            buf.append(indent + "  - name: title\n");
-            buf.append(indent + "    value: " + list.get(i).getLabel() + "\n");
+            if (list.get(i).getLink().indexOf(".html") > -1) {
+              buf.append(indent + "  path: " + list.get(i).getLink() + "\n");
+              buf.append(indent + "  path_attributes:\n");
+              buf.append(indent + "  - name: title\n");
+              buf.append(indent + "    value: " + list.get(i).getLabel() + "\n");
+            } else {
+              buf.append(indent + "  path: \"#\"\n");
+              buf.append(indent + "  path_attributes:\n");
+              buf.append(indent + "  - name: onclick\n");
+              buf.append(indent + "    value: return false;\n");
+              buf.append(indent + "  - name: title\n");
+              buf.append(indent + "    value: " + list.get(i).getLabel() + "\n");
+            }
           } else {
             String xmlToHtmlPath = list.get(i).getLink().replace(".xml", ".html");
             buf.append(indent + "- title: " + list.get(i).getLabel() + "\n");
