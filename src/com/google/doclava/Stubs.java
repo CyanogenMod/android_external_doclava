@@ -799,7 +799,14 @@ public class Stubs {
     }
 
     // Find any relevant ancestor declaration and inspect it
-    MethodInfo om = mi.findSuperclassImplementation(notStrippable);
+    MethodInfo om = mi;
+    do {
+      MethodInfo superMethod = om.findSuperclassImplementation(notStrippable);
+      if (om.equals(superMethod)) {
+        break;
+      }
+      om = superMethod;
+    } while (om != null && (om.isHiddenOrRemoved() || om.containingClass().isHiddenOrRemoved()));
     if (om != null) {
       // Visibility mismatch is an API change, so check for it
       if (mi.mIsPrivate == om.mIsPrivate && mi.mIsPublic == om.mIsPublic
@@ -807,21 +814,11 @@ public class Stubs {
         // Look only for overrides of an ancestor class implementation,
         // not of e.g. an abstract or interface method declaration
         if (!om.isAbstract()) {
-          // If the parent is hidden or removed, we can't rely on it to provide
-          // the API
-          // TODO This check will false positive on cases of a method declared
-          // in a non-hidden class, overidden in a hidden class, and then overidden
-          // again in a non-hidden subclass of the hidden class
-          // (non-hidden->hidden->non-hidden), and will redundantly output a method
-          // entry for the non-hidden sub-subclass. Thankfully, this pattern tends
-          // to be quite rare.
-          if (!om.isHiddenOrRemoved() && !om.containingClass().isHiddenOrRemoved()) {
-            // If the only "override" turns out to be in our own class
-            // (which sometimes happens in concrete subclasses of
-            // abstract base classes), it's not really an override
-            if (!mi.mContainingClass.equals(om.mContainingClass)) {
-              return true;
-            }
+          // If the only "override" turns out to be in our own class
+          // (which sometimes happens in concrete subclasses of
+          // abstract base classes), it's not really an override
+          if (!mi.mContainingClass.equals(om.mContainingClass)) {
+                return true;
           }
         }
       }
