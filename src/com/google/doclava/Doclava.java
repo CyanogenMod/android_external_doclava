@@ -851,11 +851,11 @@ public class Doclava {
         String templ = relative + f.getName();
         int len = templ.length();
         if (len > 3 && ".cs".equals(templ.substring(len - 3))) {
-          Data data = makePackageHDF();
+          Data data = makeHDF();
           String filename = templ.substring(0, len - 3) + htmlExtension;
           ClearPage.write(data, templ, filename, js);
         } else if (len > 3 && ".jd".equals(templ.substring(len - 3))) {
-          Data data = makePackageHDF();
+          Data data = makeHDF();
           String filename = templ.substring(0, len - 3) + htmlExtension;
           DocFile.writePage(f.getAbsolutePath(), relative, filename, data);
         } else if(!f.getName().equals(".DS_Store")){
